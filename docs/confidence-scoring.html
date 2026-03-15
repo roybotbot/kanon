@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canon — Confidence Scoring</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e0e0e0; line-height: 1.6; }
+  .container { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+  h1 { font-size: 1.8rem; margin-bottom: 4px; color: #fff; }
+  h2 { font-size: 1.2rem; margin: 40px 0 12px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 6px; }
+  .subtitle { color: #888; margin-bottom: 36px; }
+  p { color: #aaa; margin: 8px 0; font-size: 0.95rem; }
+  .ic { background: #1e1e1e; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; font-family: 'SF Mono', monospace; }
+
+  /* Dimension cards */
+  .dim { background: #161616; border: 1px solid #2a2a2a; border-radius: 10px; padding: 20px; margin: 16px 0; }
+  .dim-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .dim-name { font-weight: 700; font-size: 1rem; color: #fff; }
+  .dim-weight { font-size: 0.8rem; color: #888; background: #1e1e1e; padding: 2px 10px; border-radius: 12px; }
+  .dim-question { color: #aaa; font-size: 0.9rem; font-style: italic; margin-bottom: 12px; }
+  .dim-formula { background: #0d0d0d; border: 1px solid #222; border-radius: 6px; padding: 12px 16px; font-family: 'SF Mono', monospace; font-size: 0.85rem; color: #ccc; }
+
+  /* Score bars */
+  .bar-group { margin: 16px 0; }
+  .bar-row { display: flex; align-items: center; gap: 12px; margin: 6px 0; }
+  .bar-label { font-size: 0.8rem; color: #888; min-width: 130px; }
+  .bar-track { flex: 1; height: 10px; background: #1a1a1a; border-radius: 5px; overflow: hidden; position: relative; }
+  .bar-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+  .bar-score { font-size: 0.85rem; font-weight: 600; min-width: 44px; text-align: right; }
+  .c-hi { background: #22c55e; }
+  .c-md { background: #eab308; }
+  .c-lo { background: #ef4444; }
+  .t-hi { color: #22c55e; }
+  .t-md { color: #eab308; }
+  .t-lo { color: #ef4444; }
+
+  /* Scenario blocks */
+  .scenario { background: #111; border: 1px solid #2a2a2a; border-radius: 10px; margin: 20px 0; overflow: hidden; }
+  .scenario-title { background: #1a1a1a; padding: 12px 20px; font-weight: 600; color: #fff; font-size: 0.95rem; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 10px; }
+  .scenario-body { padding: 20px; }
+  .scenario-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; font-size: 0.85rem; }
+  .scenario-meta dt { color: #666; }
+  .scenario-meta dd { color: #ccc; }
+
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+  .badge-pass { background: #052e16; color: #4ade80; }
+  .badge-warn { background: #422006; color: #fbbf24; }
+  .badge-fail { background: #450a0a; color: #f87171; }
+
+  /* Threshold line */
+  .threshold { position: relative; margin: 24px 0 12px; padding-top: 12px; border-top: 2px dashed #ef444466; }
+  .threshold-label { position: absolute; top: -10px; left: 0; background: #0a0a0a; padding: 0 8px; font-size: 0.75rem; color: #ef4444; font-weight: 600; }
+
+  .callout { background: #161616; border-left: 3px solid #2563eb; border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 0.9rem; color: #aaa; }
+  .callout strong { color: #ccc; }
+
+  /* Change arrow */
+  .change { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 0.85rem; }
+  .change-arrow { color: #ef4444; font-weight: 700; }
+
+  hr { border: none; border-top: 1px solid #222; margin: 40px 0; }
+
+  /* Penalty box */
+  .penalty { background: #1a0a0a; border: 1px solid #331111; border-radius: 8px; padding: 16px; margin: 16px 0; }
+  .penalty-title { color: #f87171; font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Confidence Scoring</h1>
+<p class="subtitle">How Canon decides whether an asset is trustworthy or needs review</p>
+
+<!-- ===== DIMENSIONS ===== -->
+<h2>The Four Dimensions</h2>
+
+<div class="dim">
+  <div class="dim-header">
+    <span class="dim-name">📚 Evidence</span>
+    <span class="dim-weight">weight: 30%</span>
+  </div>
+  <div class="dim-question">Does the asset have evidence backing for what it teaches?</div>
+  <div class="dim-formula">score = concepts_with_evidence / total_concepts_taught</div>
+</div>
+
+<div class="dim">
+  <div class="dim-header">
+    <span class="dim-name">🕐 Freshness</span>
+    <span class="dim-weight">weight: 30%</span>
+  </div>
+  <div class="dim-question">Was the asset built on current evidence?</div>
+  <div class="dim-formula">score = fresh_evidence_links / total_evidence_links<br><br>fresh = evidence.last_verified ≤ asset.last_updated</div>
+</div>
+
+<div class="dim">
+  <div class="dim-header">
+    <span class="dim-name">🏗️ Structural</span>
+    <span class="dim-weight">weight: 20%</span>
+  </div>
+  <div class="dim-question">Are required ontology relationships present?</div>
+  <div class="dim-formula">checks: concept? task? audience? evidence? objectives? prereqs?<br>score = checks_passed / total_checks</div>
+</div>
+
+<div class="dim">
+  <div class="dim-header">
+    <span class="dim-name">🤖 Transformation</span>
+    <span class="dim-weight">weight: 20%</span>
+  </div>
+  <div class="dim-question">How much AI risk was introduced?</div>
+  <div class="dim-formula">dry_run / manual → 1.0 &nbsp;|&nbsp; llm_single → 0.7 &nbsp;|&nbsp; llm_adapted → 0.6 &nbsp;|&nbsp; llm_multi → 0.5</div>
+</div>
+
+<div class="callout">
+  <strong>Overall = </strong>(evidence × 0.30) + (freshness × 0.30) + (structural × 0.20) + (transformation × 0.20)
+</div>
+
+<hr>
+
+<!-- ===== SCENARIO 1: HEALTHY ===== -->
+<h2>Worked Example</h2>
+
+<div class="scenario">
+  <div class="scenario-title">
+    <span>📄</span> Prompt Engineering Facilitator Guide
+    <span class="badge badge-pass">HEALTHY</span>
+  </div>
+  <div class="scenario-body">
+    <div class="scenario-meta">
+      <dt>Teaches</dt><dd>context_window, prompt_template, system_prompt</dd>
+      <dt>Evidence links</dt><dd>context_window_docs, prompt_guide_docs, system_prompt_docs</dd>
+      <dt>Generated</dt><dd>2026-02-01</dd>
+      <dt>Method</dt><dd>llm_single</dd>
+    </div>
+
+    <p style="color:#666; font-size:0.8rem; margin-bottom: 12px;">All evidence verified before asset generation date. All metadata complete.</p>
+
+    <div class="bar-group">
+      <div class="bar-row">
+        <span class="bar-label">📚 Evidence</span>
+        <div class="bar-track"><div class="bar-fill c-hi" style="width:100%"></div></div>
+        <span class="bar-score t-hi">1.00</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">🕐 Freshness</span>
+        <div class="bar-track"><div class="bar-fill c-hi" style="width:100%"></div></div>
+        <span class="bar-score t-hi">1.00</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">🏗️ Structural</span>
+        <div class="bar-track"><div class="bar-fill c-hi" style="width:100%"></div></div>
+        <span class="bar-score t-hi">1.00</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">🤖 Transformation</span>
+        <div class="bar-track"><div class="bar-fill c-md" style="width:70%"></div></div>
+        <span class="bar-score t-md">0.70</span>
+      </div>
+    </div>
+
+    <div class="bar-row" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
+      <span class="bar-label" style="font-weight:700; color:#ccc;">Overall</span>
+      <div class="bar-track" style="height:14px"><div class="bar-fill c-hi" style="width:94%"></div></div>
+      <span class="bar-score t-hi" style="font-size:1rem;">0.94</span>
+    </div>
+
+    <p style="font-size:0.8rem; color:#666; margin-top:8px;">(1.0 × .30) + (1.0 × .30) + (1.0 × .20) + (0.70 × .20) = 0.94</p>
+  </div>
+</div>
+
+<!-- ===== SCENARIO 2: EVIDENCE CHANGES ===== -->
+
+<div class="scenario">
+  <div class="scenario-title">
+    <span>⚡</span> Event: context_window_docs updated
+    <span class="badge badge-warn">DRIFT DETECTED</span>
+  </div>
+  <div class="scenario-body">
+    <p>Anthropic updates docs on 2026-03-10: context window increased from 200K → 500K tokens.</p>
+    <p style="color:#666; font-size:0.85rem;">The asset was generated on 2026-02-01 — before this change. One of three evidence links is now stale.</p>
+
+    <div class="bar-group" style="margin-top:16px;">
+      <div class="bar-row">
+        <span class="bar-label">📚 Evidence</span>
+        <div class="bar-track"><div class="bar-fill c-hi" style="width:100%"></div></div>
+        <span class="bar-score t-hi">1.00</span>
+      </div>
+      <p style="font-size:0.8rem; color:#666; margin: 2px 0 8px 142px;">3/3 concepts still have evidence links (links exist, unchanged)</p>
+
+      <div class="bar-row">
+        <span class="bar-label">🕐 Freshness</span>
+        <div class="bar-track"><div class="bar-fill c-md" style="width:67%"></div></div>
+        <span class="bar-score t-md">0.67</span>
+      </div>
+      <p style="font-size:0.8rem; color:#666; margin: 2px 0 8px 142px;">2/3 links fresh — context_window_docs verified AFTER asset was generated</p>
+
+      <div class="bar-row">
+        <span class="bar-label">🏗️ Structural</span>
+        <div class="bar-track"><div class="bar-fill c-hi" style="width:100%"></div></div>
+        <span class="bar-score t-hi">1.00</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">🤖 Transformation</span>
+        <div class="bar-track"><div class="bar-fill c-md" style="width:70%"></div></div>
+        <span class="bar-score t-md">0.70</span>
+      </div>
+    </div>
+
+    <div class="bar-row" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
+      <span class="bar-label" style="font-weight:700; color:#ccc;">Overall</span>
+      <div class="bar-track" style="height:14px"><div class="bar-fill c-hi" style="width:84%"></div></div>
+      <span class="bar-score t-hi" style="font-size:1rem;">0.84</span>
+    </div>
+
+    <p style="font-size:0.8rem; color:#666; margin-top:8px;">(1.0 × .30) + (0.67 × .30) + (1.0 × .20) + (0.70 × .20) = 0.84 — above threshold, no review yet</p>
+  </div>
+</div>
+
+<!-- ===== CONTRADICTION PENALTY ===== -->
+
+<div class="scenario">
+  <div class="scenario-title">
+    <span>🔴</span> Contradiction detected
+    <span class="badge badge-fail">REVIEW REQUIRED</span>
+  </div>
+  <div class="scenario-body">
+
+    <div class="penalty">
+      <div class="penalty-title">Contradiction Penalty</div>
+      <p style="font-size:0.85rem; color:#ccc;">The asset says "Claude supports up to 200K tokens" — the updated evidence says 500K. This isn't just stale, it's <strong>wrong</strong>.</p>
+      <p style="font-size:0.85rem; color:#aaa; margin-top: 8px;">When evidence has a recorded change AND the asset hasn't been updated:</p>
+      <p style="font-size:0.85rem; color:#f87171; margin-top: 4px;">• That evidence link's freshness → 0.0</p>
+      <p style="font-size:0.85rem; color:#f87171;">• That concept's evidence backing → 0.0 (evidence no longer supports the claim)</p>
+    </div>
+
+    <div class="bar-group" style="margin-top:16px;">
+      <div class="bar-row">
+        <span class="bar-label">📚 Evidence</span>
+        <div class="bar-track"><div class="bar-fill c-md" style="width:67%"></div></div>
+        <span class="bar-score">
+          <span class="t-hi">1.00</span>
+          <span class="change-arrow"> → </span>
+          <span class="t-md">0.67</span>
+        </span>
+      </div>
+      <p style="font-size:0.8rem; color:#666; margin: 2px 0 8px 142px;">2/3 concepts backed — context_window evidence now contradicts the asset</p>
+
+      <div class="bar-row">
+        <span class="bar-label">🕐 Freshness</span>
+        <div class="bar-track"><div class="bar-fill c-md" style="width:67%"></div></div>
+        <span class="bar-score">
+          <span class="t-hi">1.00</span>
+          <span class="change-arrow"> → </span>
+          <span class="t-md">0.67</span>
+        </span>
+      </div>
+
+      <div class="bar-row">
+        <span class="bar-label">🏗️ Structural</span>
+        <div class="bar-track"><div class="bar-fill c-hi" style="width:100%"></div></div>
+        <span class="bar-score t-hi">1.00</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">🤖 Transformation</span>
+        <div class="bar-track"><div class="bar-fill c-md" style="width:70%"></div></div>
+        <span class="bar-score t-md">0.70</span>
+      </div>
+    </div>
+
+    <div class="bar-row" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
+      <span class="bar-label" style="font-weight:700; color:#ccc;">Overall</span>
+      <div class="bar-track" style="height:14px"><div class="bar-fill c-md" style="width:74%"></div></div>
+      <span class="bar-score" style="font-size:1rem;">
+        <span class="t-hi">0.94</span>
+        <span class="change-arrow"> → </span>
+        <span class="t-md">0.74</span>
+      </span>
+    </div>
+
+    <p style="font-size:0.8rem; color:#666; margin-top:8px;">(0.67 × .30) + (0.67 × .30) + (1.0 × .20) + (0.70 × .20) = 0.74 — borderline</p>
+
+    <div class="threshold">
+      <span class="threshold-label">Review threshold: 0.70</span>
+    </div>
+
+    <p style="font-size:0.85rem; color:#ccc; margin-top: 20px;">If a <strong>second</strong> evidence source also changes:</p>
+
+    <div class="bar-group" style="margin-top:8px;">
+      <div class="bar-row">
+        <span class="bar-label">📚 Evidence</span>
+        <div class="bar-track"><div class="bar-fill c-lo" style="width:33%"></div></div>
+        <span class="bar-score t-lo">0.33</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">🕐 Freshness</span>
+        <div class="bar-track"><div class="bar-fill c-lo" style="width:33%"></div></div>
+        <span class="bar-score t-lo">0.33</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">🏗️ Structural</span>
+        <div class="bar-track"><div class="bar-fill c-hi" style="width:100%"></div></div>
+        <span class="bar-score t-hi">1.00</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">🤖 Transformation</span>
+        <div class="bar-track"><div class="bar-fill c-md" style="width:70%"></div></div>
+        <span class="bar-score t-md">0.70</span>
+      </div>
+    </div>
+
+    <div class="bar-row" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #2a2a2a;">
+      <span class="bar-label" style="font-weight:700; color:#ccc;">Overall</span>
+      <div class="bar-track" style="height:14px"><div class="bar-fill c-lo" style="width:54%"></div></div>
+      <span class="bar-score t-lo" style="font-size:1rem;">0.54</span>
+    </div>
+
+    <p style="font-size:0.8rem; color:#ef4444; margin-top:8px; font-weight: 600;">⬇ Below 0.70 — asset moved to needs_review</p>
+  </div>
+</div>
+
+<hr>
+
+<!-- ===== SUMMARY ===== -->
+<h2>Key Properties</h2>
+
+<div class="callout">
+  <strong>Proportional:</strong> One stale source is a warning. Multiple stale sources or a direct contradiction trigger review. The system doesn't cry wolf on every minor update.
+</div>
+
+<div class="callout">
+  <strong>Deterministic:</strong> Every score is a formula with inputs you can inspect. No magic numbers, no "I feel like this is a 0.4." You can always trace why a score is what it is.
+</div>
+
+<div class="callout">
+  <strong>Tunable:</strong> Weights (30/30/20/20), threshold (0.70), and transformation penalties are all configurable. Different teams might care more about freshness than structural completeness.
+</div>
+
+</div>
+</body>
+</html>
