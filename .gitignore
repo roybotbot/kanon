@@ -11,6 +11,9 @@ venv/
 .env
 .env.local
 
+# Docs (local HTML visuals)
+docs/
+
 # OS
 .DS_Store
 Thumbs.db
