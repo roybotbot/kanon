@@ -28,6 +28,8 @@ The planned full Canon system is composed of:
 
 The ontology defines structured relationships between concepts, capabilities, tasks, audiences, and evidence. Training assets are generated from these knowledge objects rather than written independently. When source material changes, the system traces the impact through the knowledge graph, recalculates confidence scores, and flags affected assets for review.
 
+The full system includes a web interface for inspecting the knowledge graph and the operations performed on it. Users can browse entities and their relationships as an interactive graph, view the audit trail for any asset or fact, see what inputs were used and what decisions were made at each step, and monitor system health through confidence scores and review queues. The CLI remains available for all operations.
+
 ## Proof of Concept
 
 The current implementation is a minimal but complete version of the system, focused on validating the core idea: does structuring training knowledge as ontology-connected entities actually make it easier to keep content accurate and generate useful training materials?
