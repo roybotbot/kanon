@@ -50,13 +50,31 @@ _ENTITY_CONFIG: list[tuple[type[BaseModel], str, list[str]]] = [
 class KnowledgeGraph:
     """Graph of Canon ontology entities with forward/reverse traversal."""
 
-    def __init__(self, data_dir: Path = Path("data")):
+    def __init__(self, data_dir: Optional[Path] = None):
         self._entities: dict[str, BaseModel] = {}
         self._forward: dict[str, list[Edge]] = defaultdict(list)   # source_id → edges
         self._reverse: dict[str, list[Edge]] = defaultdict(list)   # target_id → edges
 
+        if data_dir is not None:
+            self._load(data_dir)
+            self._build_indexes()
+
+    # ------------------------------------------------------------------
+    # Public load method (alternative to constructor-time loading)
+    # ------------------------------------------------------------------
+
+    def load(self, data_dir: Path) -> None:
+        """Load entities from data_dir and rebuild indexes."""
+        self._entities = {}
+        self._forward = defaultdict(list)
+        self._reverse = defaultdict(list)
         self._load(data_dir)
         self._build_indexes()
+
+    @property
+    def entities(self) -> dict[str, BaseModel]:
+        """All loaded entities keyed by ID."""
+        return self._entities
 
     # ------------------------------------------------------------------
     # Loading
