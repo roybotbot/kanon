@@ -123,7 +123,32 @@ def generate_graph_html(graph: KnowledgeGraph, output_path: Path) -> Path:
     nodes_json = json.dumps(nodes, default=str)
     edges_json = json.dumps(edges)
 
-    html = _build_html(nodes_json, edges_json)
+    # Build summary stats for the sidebar
+    type_counts = {}
+    concept_names_list = []
+    for n in nodes:
+        type_counts[n["type"]] = type_counts.get(n["type"], 0) + 1
+        if n["type"] == "Concept":
+            concept_names_list.append(n["label"])
+
+    total_entities = len(nodes)
+    evidence_count = type_counts.get("Evidence", 0)
+    fact_count = type_counts.get("Fact", 0)
+    asset_count = type_counts.get("Asset", 0)
+
+    if len(concept_names_list) > 3:
+        concept_names = ", ".join(concept_names_list[:3]) + f", and {len(concept_names_list) - 3} more"
+    else:
+        concept_names = ", ".join(concept_names_list) if concept_names_list else "none"
+
+    html = _build_html(
+        nodes_json, edges_json,
+        total_entities=total_entities,
+        concept_names=concept_names,
+        evidence_count=evidence_count,
+        fact_count=fact_count,
+        asset_count=asset_count,
+    )
     output_path.write_text(html, encoding="utf-8")
     return output_path.resolve()
 
@@ -132,7 +157,15 @@ def generate_graph_html(graph: KnowledgeGraph, output_path: Path) -> Path:
 # HTML builder
 # ---------------------------------------------------------------------------
 
-def _build_html(nodes_json: str, edges_json: str) -> str:
+def _build_html(
+    nodes_json: str,
+    edges_json: str,
+    total_entities: int = 0,
+    concept_names: str = "",
+    evidence_count: int = 0,
+    fact_count: int = 0,
+    asset_count: int = 0,
+) -> str:
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -422,7 +455,8 @@ def _build_html(nodes_json: str, edges_json: str) -> str:
 <div id="main">
   <div id="left-sidebar">
     <h2>Canon Knowledge Graph</h2>
-    <p>This graph represents a training knowledge system. Knowledge flows from source material down to training assets.</p>
+    <p>This graph contains <strong style="color:#fff;">{total_entities} entities</strong> representing training knowledge for the <strong style="color:#fff;">Claude/AI</strong> domain.</p>
+    <p style="font-size:12px;">It covers {concept_names}, backed by {evidence_count} evidence source{"s" if evidence_count != 1 else ""} from Anthropic documentation. {fact_count} versioned facts track specific claims that can become stale. {asset_count} training asset{"s" if asset_count != 1 else ""} {"have" if asset_count != 1 else "has"} been generated from these knowledge objects.</p>
 
     <div class="flow-section">
       <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;font-weight:600;">Knowledge Flow</div>
