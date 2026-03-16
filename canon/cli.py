@@ -1,6 +1,7 @@
 """Canon CLI — graph, status, generate, and drift commands."""
 from __future__ import annotations
 
+import webbrowser
 from collections import defaultdict
 from pathlib import Path
 
@@ -68,6 +69,7 @@ def graph_cmd(concept: str | None, gaps: bool) -> None:
                 click.echo(f"  ← {name} [{rev.id}]")  # type: ignore[attr-defined]
         else:
             click.echo("\nReferenced by: (none)")
+        _open_graph_html(g)
         return
 
     if gaps:
@@ -102,6 +104,7 @@ def graph_cmd(concept: str | None, gaps: bool) -> None:
                 click.echo(f"  - {t.name} [{t.id}]")
         else:
             click.echo("\nAll tasks have associated assets.")
+        _open_graph_html(g)
         return
 
     # Default: overview
@@ -120,6 +123,23 @@ def graph_cmd(concept: str | None, gaps: bool) -> None:
             name = getattr(entity, "name", entity.id)  # type: ignore[attr-defined]
             click.echo(f"  - {name} [{entity.id}]")  # type: ignore[attr-defined]
         click.echo()
+
+    _open_graph_html(g)
+
+
+# ---------------------------------------------------------------------------
+# _open_graph_html  (shared helper)
+# ---------------------------------------------------------------------------
+
+
+def _open_graph_html(g: KnowledgeGraph) -> None:
+    """Generate docs/graph.html and open it in the default browser."""
+    from canon.visualize import generate_graph_html
+
+    html_path = generate_graph_html(
+        g, Path(__file__).parent.parent / "docs" / "graph.html"
+    )
+    webbrowser.open(f"file://{html_path.resolve()}")
 
 
 # ---------------------------------------------------------------------------
