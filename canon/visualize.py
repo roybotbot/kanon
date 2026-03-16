@@ -1285,14 +1285,21 @@ function buildTypeToolbar() {{
 // ============================================================
 // MOUSE / TOUCH EVENTS
 // ============================================================
+let dragOffsetX = 0, dragOffsetY = 0;  // offset from node center to click point
+let nodeDragStarted = false;           // true once drag threshold is met
+
 canvas.addEventListener('mousedown', e => {{
   const idx = nodeAt(e.offsetX, e.offsetY);
   if (idx !== -1) {{
-    dragging      = true;
-    dragNode      = idx;
-    dragStartX    = e.offsetX;
-    dragStartY    = e.offsetY;
-    canvas.style.cursor = 'grabbing';
+    dragging         = true;
+    dragNode         = idx;
+    dragStartX       = e.offsetX;
+    dragStartY       = e.offsetY;
+    nodeDragStarted  = false;
+    // Store offset from click to node center so node doesn't jump
+    const [wx, wy] = screenToWorld(e.offsetX, e.offsetY);
+    dragOffsetX = px[idx] - wx;
+    dragOffsetY = py[idx] - wy;
   }} else {{
     dragging      = true;
     dragNode      = -1;
@@ -1311,9 +1318,13 @@ canvas.addEventListener('mousemove', e => {{
   }}
 
   if (dragNode !== -1) {{
+    const moved = Math.abs(e.offsetX - dragStartX) + Math.abs(e.offsetY - dragStartY);
+    if (!nodeDragStarted && moved < 5) return;  // wait for drag threshold
+    nodeDragStarted = true;
+    canvas.style.cursor = 'grabbing';
     const [wx, wy] = screenToWorld(e.offsetX, e.offsetY);
-    px[dragNode]   = wx;
-    py[dragNode]   = wy;
+    px[dragNode] = wx + dragOffsetX;
+    py[dragNode] = wy + dragOffsetY;
     draw();
   }} else {{
     const dx = (e.offsetX - panStartX) / camZ;
@@ -1333,17 +1344,15 @@ canvas.addEventListener('mouseup', e => {{
       panel.classList.add('hidden');
       draw();
     }}
-  }} else if (dragging && dragNode !== -1) {{
-    const moved = Math.abs(e.offsetX - dragStartX) + Math.abs(e.offsetY - dragStartY);
-    if (moved < 5) {{
-      // Click on node
-      computeTrail(dragNode);
-      showPanel(dragNode);
-      draw();
-    }}
+  }} else if (dragging && dragNode !== -1 && !nodeDragStarted) {{
+    // Click on node (no drag occurred)
+    computeTrail(dragNode);
+    showPanel(dragNode);
+    draw();
   }}
   dragging = false;
   dragNode = -1;
+  nodeDragStarted = false;
   canvas.style.cursor = 'default';
 }});
 
