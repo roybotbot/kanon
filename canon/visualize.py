@@ -601,8 +601,10 @@ window.addEventListener('resize', () => {{
 // ============================================================
 let px = [], py = [], pw = [];   // positions & widths (world-space)
 let selectedIdx  = -1;           // clicked node
-let trailNodes   = new Set();    // BFS result nodes
-let trailEdges   = new Set();    // BFS result edge indices
+let trailNodes   = new Set();    // hop-1 nodes
+let trailEdges   = new Set();    // hop-1 edges
+let hop2Nodes    = new Set();    // hop-2 nodes (dimmer than hop-1)
+let hop2Edges    = new Set();    // hop-2 edges
 
 // Collapsed type groups
 const collapsed = new Set();     // type names that are collapsed
@@ -760,28 +762,39 @@ function fitView() {{
 function computeTrail(idx) {{
   trailNodes = new Set([idx]);
   trailEdges = new Set();
+  hop2Nodes  = new Set();
+  hop2Edges  = new Set();
 
-  // BFS limited to 2 hops — shows direct connections only
-  const MAX_DEPTH = 1;
-  const queue = [[idx, 0]];
-  while (queue.length) {{
-    const [cur, depth] = queue.shift();
-    if (depth >= MAX_DEPTH) continue;
+  // Hop 1: direct connections
+  for (let ei = 0; ei < EDGES.length; ei++) {{
+    const e = EDGES[ei];
+    if (e.source === idx && !trailNodes.has(e.target)) {{
+      trailNodes.add(e.target);
+      trailEdges.add(ei);
+    }}
+    if (e.target === idx && !trailNodes.has(e.source)) {{
+      trailNodes.add(e.source);
+      trailEdges.add(ei);
+    }}
+  }}
+
+  // Hop 2: connections of hop-1 nodes
+  for (const h1 of trailNodes) {{
+    if (h1 === idx) continue;
     for (let ei = 0; ei < EDGES.length; ei++) {{
       const e = EDGES[ei];
-      if (e.source === cur && !trailNodes.has(e.target)) {{
-        trailNodes.add(e.target);
-        trailEdges.add(ei);
-        queue.push([e.target, depth + 1]);
+      if (e.source === h1 && !trailNodes.has(e.target) && !hop2Nodes.has(e.target)) {{
+        hop2Nodes.add(e.target);
+        hop2Edges.add(ei);
       }}
-      if (e.target === cur && !trailNodes.has(e.source)) {{
-        trailNodes.add(e.source);
-        trailEdges.add(ei);
-        queue.push([e.source, depth + 1]);
+      if (e.target === h1 && !trailNodes.has(e.source) && !hop2Nodes.has(e.source)) {{
+        hop2Nodes.add(e.source);
+        hop2Edges.add(ei);
       }}
     }}
   }}
-  // Also mark edges between trail nodes
+
+  // Mark edges between trail nodes
   for (let ei = 0; ei < EDGES.length; ei++) {{
     if (trailNodes.has(EDGES[ei].source) && trailNodes.has(EDGES[ei].target)) {{
       trailEdges.add(ei);
@@ -793,6 +806,8 @@ function clearTrail() {{
   selectedIdx = -1;
   trailNodes  = new Set();
   trailEdges  = new Set();
+  hop2Nodes   = new Set();
+  hop2Edges   = new Set();
 }}
 
 // ============================================================
@@ -1022,14 +1037,17 @@ function draw() {{
     const e  = EDGES[ei];
     const si = e.source, ti = e.target;
     const onTrail = trailEdges.has(ei);
+    const onHop2  = hop2Edges.has(ei);
 
     let alpha, edgeColor, lw;
     if (!hasTrail) {{
       alpha = 0.45; edgeColor = '#475569'; lw = 1.2;
     }} else if (onTrail) {{
       alpha = 0.9; edgeColor = '#94a3b8'; lw = 2.0;
+    }} else if (onHop2) {{
+      alpha = 0.35; edgeColor = '#475569'; lw = 1.0;
     }} else {{
-      alpha = 0.15; edgeColor = '#334155'; lw = 0.8;
+      alpha = 0.1; edgeColor = '#1e293b'; lw = 0.6;
     }}
 
     ctx.globalAlpha = alpha;
@@ -1044,7 +1062,7 @@ function draw() {{
       const my = (y1 + y2) / 2 - 5;
       ctx.font      = `${{EDGE_FONT}}px system-ui`;
       ctx.textAlign = 'center';
-      ctx.fillStyle = onTrail ? '#94a3b8' : '#64748b';
+      ctx.fillStyle = onTrail ? '#94a3b8' : onHop2 ? '#64748b' : '#334155';
       ctx.fillText(e.relation, mx, my);
     }}
   }}
@@ -1058,12 +1076,14 @@ function draw() {{
 
     const isSelected = i === selectedIdx;
     const onTrail    = trailNodes.has(i);
+    const onHop2     = hop2Nodes.has(i);
 
     let alpha;
     if (!hasTrail)       alpha = 1.0;
     else if (isSelected) alpha = 1.0;
     else if (onTrail)    alpha = 0.9;
-    else                 alpha = 0.3;
+    else if (onHop2)     alpha = 0.5;
+    else                 alpha = 0.18;
 
     ctx.globalAlpha = alpha;
 
