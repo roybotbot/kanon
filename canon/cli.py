@@ -27,7 +27,24 @@ def _get_logger() -> AuditLogger:
 
 @click.group()
 def cli() -> None:
-    """Canon — ontology-driven knowledge management CLI."""
+    """Canon — ontology-driven knowledge system for training content.
+
+    Canon models training knowledge as structured entities (concepts, facts,
+    evidence, tasks, assets) connected through an ontology. It generates
+    training materials from these knowledge objects and detects when source
+    material changes make content stale.
+
+    \b
+    Quick start:
+      canon graph                     Browse all entities and open interactive visualization
+      canon graph --concept tool_use  Inspect a specific entity and its connections
+      canon graph --gaps              Find concepts and tasks without training assets
+      canon status                    See confidence scores for all assets
+      canon generate --type setup_guide --concepts tool_use --audience enterprise_developer --dry-run
+                                      Generate a training asset from knowledge objects
+      canon drift --evidence anthropic_tool_use_docs --change "API format changed"
+                                      Report a source change and see what's affected
+    """
 
 
 # ---------------------------------------------------------------------------
@@ -39,7 +56,14 @@ def cli() -> None:
 @click.option("--concept", default=None, help="Show details for a specific concept ID.")
 @click.option("--gaps", is_flag=True, default=False, help="Find gaps (entities without assets).")
 def graph_cmd(concept: str | None, gaps: bool) -> None:
-    """Explore the knowledge graph."""
+    """Explore the knowledge graph.
+
+    \b
+    Examples:
+      canon graph                     List all entities, open HTML visualization
+      canon graph --concept tool_use  Show Tool Use and its connections
+      canon graph --gaps              Find concepts/tasks missing training assets
+    """
     g = _get_graph()
 
     if concept:
@@ -149,7 +173,12 @@ def _open_graph_html(g: KnowledgeGraph) -> None:
 
 @cli.command("status")
 def status_cmd() -> None:
-    """Show confidence and lifecycle status of all assets."""
+    """Show confidence and lifecycle status of all assets.
+
+    \b
+    Example:
+      canon status
+    """
     g = _get_graph()
     assets = [e for e in g._entities.values() if isinstance(e, Asset)]
 
@@ -177,7 +206,16 @@ def status_cmd() -> None:
 @click.option("--audience", required=True, help="Audience ID.")
 @click.option("--dry-run", "dry_run", is_flag=True, default=False, help="Dry-run (preview only).")
 def generate_cmd(template_type: str, concepts: str, audience: str, dry_run: bool) -> None:
-    """Generate an asset from a template."""
+    """Generate a training asset from knowledge objects using a template.
+
+    \b
+    Templates available: setup_guide, facilitator_guide
+
+    \b
+    Examples:
+      canon generate --type setup_guide --concepts tool_use --audience enterprise_developer --dry-run
+      canon generate --type facilitator_guide --concepts tool_use,system_prompt --audience support_engineer --dry-run
+    """
     g = _get_graph()
     logger = _get_logger()
 
@@ -220,7 +258,16 @@ def generate_cmd(template_type: str, concepts: str, audience: str, dry_run: bool
 @click.option("--evidence", "evidence_id", required=True, help="Evidence ID to check drift for.")
 @click.option("--change", "change_description", required=True, help="Description of the change.")
 def drift_cmd(evidence_id: str, change_description: str) -> None:
-    """Detect drift caused by an evidence change."""
+    """Report an evidence source change and trace its impact.
+
+    Finds stale facts backed by the changed evidence and any training
+    assets that reference those facts or the affected concepts.
+
+    \b
+    Examples:
+      canon drift --evidence anthropic_tool_use_docs --change "Tool schema format updated"
+      canon drift --evidence anthropic_models_page --change "Context window increased to 500K"
+    """
     g = _get_graph()
     logger = _get_logger()
 
