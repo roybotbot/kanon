@@ -1198,7 +1198,7 @@ function showPanel(idx) {{
       const t = NODES[e.target];
       html += `<div class="conn-link" onclick="jumpTo(${{e.target}})"
                     style="color:${{escHtml(t.fg)}}">
-        <span class="rel-label">${{escHtml(e.relation)}}</span>${{escHtml(t.label)}}
+        <span style="color:#6b7280;margin-right:4px;">\u2192</span><span class="rel-label">${{escHtml(e.relation)}}</span>${{escHtml(t.label)}}
       </div>`;
     }}
   }}
@@ -1209,7 +1209,7 @@ function showPanel(idx) {{
       const s = NODES[e.source];
       html += `<div class="conn-link" onclick="jumpTo(${{e.source}})"
                     style="color:${{escHtml(s.fg)}}">
-        <span class="rel-label">${{escHtml(e.relation)}}</span>${{escHtml(s.label)}}
+        <span style="color:#6b7280;margin-right:4px;">\u2190</span><span class="rel-label">${{escHtml(e.relation)}}</span>${{escHtml(s.label)}}
       </div>`;
     }}
   }}
