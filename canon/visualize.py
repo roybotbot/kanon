@@ -965,7 +965,7 @@ function drawArrow(x1, y1, x2, y2, color, lineWidth) {{
   ctx.stroke();
 
   const angle  = Math.atan2(y2 - y1, x2 - x1);
-  const aLen   = 7;
+  const aLen   = 9;
   const tipX   = x2;
   const tipY   = y2;
   ctx.fillStyle = color;
@@ -1022,9 +1022,9 @@ function draw() {{
 
     let alpha, edgeColor, lw;
     if (!hasTrail) {{
-      alpha = 0.55; edgeColor = '#334155'; lw = 1.2;
+      alpha = 0.55; edgeColor = '#475569'; lw = 1.2;
     }} else if (onTrail) {{
-      alpha = 1.0; edgeColor = '#64748b'; lw = 2.0;
+      alpha = 1.0; edgeColor = '#94a3b8'; lw = 2.0;
     }} else {{
       alpha = 0.1; edgeColor = '#1e293b'; lw = 0.8;
     }}
@@ -1041,7 +1041,7 @@ function draw() {{
       const my = (y1 + y2) / 2 - 5;
       ctx.font      = `${{EDGE_FONT}}px system-ui`;
       ctx.textAlign = 'center';
-      ctx.fillStyle = onTrail ? '#475569' : '#1e293b';
+      ctx.fillStyle = onTrail ? '#94a3b8' : '#64748b';
       ctx.fillText(e.relation, mx, my);
     }}
   }}
