@@ -234,6 +234,79 @@ def _build_html(nodes_json: str, edges_json: str) -> str:
     white-space: nowrap;
   }}
 
+  /* ---- left sidebar ---- */
+  #left-sidebar {{
+    width: 280px;
+    min-width: 280px;
+    background: #111;
+    border-right: 1px solid #1e1e1e;
+    padding: 20px 16px;
+    overflow-y: auto;
+    flex-shrink: 0;
+    font-size: 13px;
+    line-height: 1.7;
+  }}
+
+  #left-sidebar h2 {{
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+  }}
+
+  #left-sidebar p {{
+    color: #9ca3af;
+    margin-bottom: 10px;
+  }}
+
+  #left-sidebar .legend-item {{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 12px;
+  }}
+
+  #left-sidebar .legend-swatch {{
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }}
+
+  #left-sidebar .legend-label {{
+    color: #d1d5db;
+  }}
+
+  #left-sidebar .legend-desc {{
+    color: #6b7280;
+    font-size: 11px;
+    margin-left: 22px;
+    margin-bottom: 8px;
+  }}
+
+  #left-sidebar .flow-section {{
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #1e1e1e;
+  }}
+
+  #left-sidebar .flow-arrow {{
+    color: #4b5563;
+    text-align: center;
+    font-size: 11px;
+    margin: 2px 0;
+  }}
+
+  #left-sidebar .flow-step {{
+    text-align: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    margin: 2px 0;
+  }}
+
   /* ---- detail panel ---- */
   #panel {{
     width: 300px;
@@ -347,12 +420,75 @@ def _build_html(nodes_json: str, edges_json: str) -> str:
 <div id="type-toolbar"></div>
 
 <div id="main">
+  <div id="left-sidebar">
+    <h2>Canon Knowledge Graph</h2>
+    <p>This graph represents a training knowledge system. Knowledge flows from source material down to training assets.</p>
+
+    <div class="flow-section">
+      <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;font-weight:600;">Knowledge Flow</div>
+      <div class="flow-step" style="background:#2d1f3b;color:#c084fc;">Evidence</div>
+      <div class="flow-arrow">sources back</div>
+      <div class="flow-step" style="background:#1f2b3b;color:#93c5fd;">Facts</div>
+      <div class="flow-arrow">belong to</div>
+      <div class="flow-step" style="background:#1e3a5f;color:#60a5fa;">Concepts</div>
+      <div class="flow-arrow">support</div>
+      <div class="flow-step" style="background:#3b1f1f;color:#f87171;">Capabilities</div>
+      <div class="flow-arrow">enable</div>
+      <div class="flow-step" style="background:#1f3b2d;color:#4ade80;">Tasks</div>
+      <div class="flow-arrow">targeted at</div>
+      <div class="flow-step" style="background:#3b3b1f;color:#facc15;">Audiences</div>
+      <div class="flow-arrow">taught via</div>
+      <div class="flow-step" style="background:#1f3b3b;color:#22d3ee;">Assets</div>
+    </div>
+
+    <div class="flow-section">
+      <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;font-weight:600;">Entity Legend</div>
+
+      <div class="legend-item"><div class="legend-swatch" style="background:#2d1f3b;"></div><span class="legend-label" style="color:#c084fc;">Evidence</span></div>
+      <div class="legend-desc">Source documents backing factual claims</div>
+
+      <div class="legend-item"><div class="legend-swatch" style="background:#1f2b3b;border-radius:1px;transform:rotate(45deg);width:12px;height:12px;"></div><span class="legend-label" style="color:#93c5fd;">Facts</span></div>
+      <div class="legend-desc">Versioned claims that can become stale</div>
+
+      <div class="legend-item"><div class="legend-swatch" style="background:#1e3a5f;border-radius:4px;"></div><span class="legend-label" style="color:#60a5fa;">Concepts</span></div>
+      <div class="legend-desc">Ideas a learner must understand</div>
+
+      <div class="legend-item"><div class="legend-swatch" style="background:#3b1f1f;border-radius:6px;"></div><span class="legend-label" style="color:#f87171;">Capabilities</span></div>
+      <div class="legend-desc">What the system can do</div>
+
+      <div class="legend-item"><div class="legend-swatch" style="background:#1f3b2d;"></div><span class="legend-label" style="color:#4ade80;">Tasks</span></div>
+      <div class="legend-desc">Actions users perform</div>
+
+      <div class="legend-item"><div class="legend-swatch" style="background:#3b3b1f;border-radius:50%;"></div><span class="legend-label" style="color:#facc15;">Audiences</span></div>
+      <div class="legend-desc">Who the training targets</div>
+
+      <div class="legend-item"><div class="legend-swatch" style="background:#1f3b3b;border:2px solid #22d3ee;width:12px;height:12px;"></div><span class="legend-label" style="color:#22d3ee;">Assets</span></div>
+      <div class="legend-desc">Generated training materials</div>
+
+      <div class="legend-item"><div class="legend-swatch" style="background:#3b2d1f;"></div><span class="legend-label" style="color:#fb923c;">Constraints</span></div>
+      <div class="legend-desc">Rules training must respect</div>
+
+      <div class="legend-item"><div class="legend-swatch" style="background:#2d3b1f;border:1px dashed #a3e635;width:12px;height:12px;"></div><span class="legend-label" style="color:#a3e635;">Learning Objectives</span></div>
+      <div class="legend-desc">Measurable learner outcomes</div>
+    </div>
+
+    <div class="flow-section">
+      <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;font-weight:600;">How to Use</div>
+      <p style="font-size:11px;"><strong style="color:#d1d5db;">Click</strong> a node to highlight its trail and see details</p>
+      <p style="font-size:11px;"><strong style="color:#d1d5db;">Scroll</strong> to zoom in and out</p>
+      <p style="font-size:11px;"><strong style="color:#d1d5db;">Drag</strong> the canvas to pan</p>
+      <p style="font-size:11px;"><strong style="color:#d1d5db;">Drag</strong> a node to reposition it</p>
+      <p style="font-size:11px;"><strong style="color:#d1d5db;">Toggle</strong> entity types in the toolbar above</p>
+    </div>
+  </div>
+
   <div id="canvas-wrap">
     <canvas id="graph-canvas"></canvas>
 
     <div id="overlay-toolbar">
       <button id="btn-fit">Fit View</button>
       <button id="btn-reset-hl">Clear Selection</button>
+      <button id="btn-reset-all">Reset View</button>
     </div>
 
     <div id="hint">Click node to explore trail · Scroll to zoom · Drag to pan · Double-click canvas to fit</div>
@@ -1185,6 +1321,20 @@ document.getElementById('btn-fit').addEventListener('click', () => {{
 document.getElementById('btn-reset-hl').addEventListener('click', () => {{
   clearTrail();
   panel.classList.add('hidden');
+  draw();
+}});
+
+document.getElementById('btn-reset-all').addEventListener('click', () => {{
+  // Clear selection
+  clearTrail();
+  panel.classList.add('hidden');
+  // Expand all collapsed groups
+  collapsed.clear();
+  buildToolbar();
+  rebuildVisibleGraph();
+  // Reset layout to default positions
+  assignPositions();
+  fitView();
   draw();
 }});
 
