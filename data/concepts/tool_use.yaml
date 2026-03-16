@@ -1,0 +1,13 @@
+# data/concepts/tool_use.yaml
+id: tool_use
+name: Tool Use
+description: Enabling the model to call external functions and APIs
+supports:
+  - structured_data_extraction
+prerequisites:
+  - api_authentication
+  - system_prompt
+content_block: |
+  Tool use allows Claude to call external functions you define.
+  You provide tool definitions with names, descriptions, and input schemas.
+  Claude decides when to use a tool and returns a tool_use response block.
