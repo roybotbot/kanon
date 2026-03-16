@@ -1,0 +1,62 @@
+id: tool_use_facilitator_guide
+name: Tool Use Facilitator Guide
+asset_type: guide
+asset_subtype: setup
+delivery_format: facilitator_guide
+lifecycle_state: reviewed
+teaches:
+  - tool_use
+  - system_prompt
+demonstrates:
+  - structured_data_extraction
+supports_tasks:
+  - configure_tool_definitions
+targets:
+  - enterprise_developer
+references:
+  - tool_use_max_tools
+evidence_links:
+  - anthropic_tool_use_docs
+learning_objectives:
+  - lo_configure_tool_use
+generation_method: dry_run
+generated_at: 2026-02-01T10:00:00
+last_updated: 2026-02-01T10:00:00
+confidence:
+  evidence: 1.0
+  freshness: 1.0
+  structural: 1.0
+  transformation: 1.0
+  overall: 1.0
+content: |
+  # Tool Use Facilitator Guide
+
+  ## Overview
+  This guide covers how to configure and use Claude's tool use feature.
+  Tool use allows Claude to call external functions you define.
+
+  ## Prerequisites
+  - API authentication configured
+  - Familiarity with JSON Schema
+
+  ## Key Concepts
+  Tool use enables Claude to interact with external systems by calling
+  functions you define. You provide tool definitions with names, descriptions,
+  and input schemas. Claude decides when to use a tool and returns a
+  tool_use response block.
+
+  ## Procedure
+  1. Define the tool name and description
+  2. Specify the input schema using JSON Schema
+  3. Register the tool in the API request tools array
+  4. Handle the tool_use response block
+
+  ## Verification
+  - Send a request with a tool definition
+  - Verify Claude returns a tool_use content block
+  - Confirm the input matches your schema
+
+  ## Troubleshooting
+  - If Claude doesn't use the tool, check the tool description
+  - Ensure input_schema is valid JSON Schema
+  - Verify the tool is in the tools array

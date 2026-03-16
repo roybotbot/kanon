@@ -1,0 +1,13 @@
+id: enable_code_execution
+name: Enable Code Execution
+description: Add the code execution tool to an API request so Claude can run code
+targets:
+  - enterprise_developer
+steps:
+  - Add the code_execution tool to the tools array
+  - Send a message that benefits from computation
+  - Handle code execution results in the response
+content_block: |
+  Add {"type": "code_execution_20250825", "name": "code_execution"} to your tools array.
+  Claude will automatically write and execute code when it would help answer the question.
+  Results include stdout, stderr, and any generated files.

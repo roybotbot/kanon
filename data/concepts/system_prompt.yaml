@@ -1,0 +1,10 @@
+id: system_prompt
+name: System Prompt
+description: Instructions that set model behavior and persona for a conversation
+supports:
+  - conversation_control
+prerequisites: []
+content_block: |
+  A system prompt is a special message that sets Claude's behavior for the entire conversation.
+  It appears before any user messages and defines tone, constraints, persona, and task framing.
+  System prompts are not visible to end users but guide every response Claude generates.

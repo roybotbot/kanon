@@ -1,0 +1,12 @@
+id: code_execution
+name: Code Execution
+description: A tool that allows Claude to run code in a secure sandboxed environment
+supports:
+  - data_analysis
+prerequisites:
+  - api_authentication
+  - tool_use
+content_block: |
+  The code execution tool lets Claude write and run code during a conversation.
+  Code runs in an isolated sandbox with no internet access.
+  Claude can analyze data, create visualizations, and process uploaded files.

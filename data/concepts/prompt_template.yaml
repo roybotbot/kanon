@@ -1,0 +1,11 @@
+id: prompt_template
+name: Prompt Template
+description: A reusable structure for constructing effective prompts with consistent formatting
+supports:
+  - structured_data_extraction
+prerequisites:
+  - system_prompt
+content_block: |
+  Prompt templates provide a repeatable structure for common tasks.
+  They typically include a system prompt, input placeholders, output format instructions,
+  and examples. Templates reduce variability and improve output consistency.

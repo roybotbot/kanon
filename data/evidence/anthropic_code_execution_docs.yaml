@@ -1,0 +1,7 @@
+id: anthropic_code_execution_docs
+name: Anthropic Code Execution Documentation
+description: Documentation for Claude's code execution tool
+url: https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/code-execution
+source_type: documentation
+last_verified: 2026-03-01
+version: "2026-03"

@@ -1,0 +1,12 @@
+id: context_window
+name: Context Window
+description: The maximum amount of text (measured in tokens) that a model can process in a single request
+supports:
+  - long_document_processing
+  - multi_turn_conversation
+prerequisites:
+  - tokenization
+content_block: |
+  The context window determines how much text Claude can read and respond to at once.
+  It includes both your input (system prompt, messages, documents) and Claude's output.
+  Larger context windows allow processing longer documents and maintaining longer conversations.

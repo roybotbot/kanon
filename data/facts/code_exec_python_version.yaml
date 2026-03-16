@@ -1,0 +1,9 @@
+id: code_exec_python_version
+claim: Python version
+value: "3.11.12"
+status: active
+concept: code_execution
+evidence:
+  - anthropic_code_execution_docs
+effective_date: 2025-09-01
+recorded_date: 2025-09-05

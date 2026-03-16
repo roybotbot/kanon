@@ -1,0 +1,9 @@
+id: code_exec_container_memory
+claim: Container memory limit
+value: "5GiB RAM"
+status: active
+concept: code_execution
+evidence:
+  - anthropic_code_execution_docs
+effective_date: 2025-08-25
+recorded_date: 2025-09-01

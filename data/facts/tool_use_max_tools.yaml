@@ -1,0 +1,10 @@
+id: tool_use_max_tools
+claim: Max tools per request
+value: "128"
+numeric_value: 128
+status: active
+concept: tool_use
+evidence:
+  - anthropic_tool_use_docs
+effective_date: 2025-01-01
+recorded_date: 2025-01-15

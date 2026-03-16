@@ -1,0 +1,9 @@
+id: enterprise_developer
+name: Enterprise Developer
+description: Backend engineers integrating Claude via the API
+assumed_knowledge:
+  - api_authentication
+tone: technical
+preferred_formats:
+  - facilitator_guide
+  - reference_document

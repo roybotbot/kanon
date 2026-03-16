@@ -1,0 +1,5 @@
+id: no_unsupported_security_claims
+name: No unsupported security claims
+description: Assets must not make security guarantees without evidence from official documentation
+scope: all_assets
+severity: must

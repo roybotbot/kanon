@@ -1,0 +1,11 @@
+id: context_window_max
+claim: Max input tokens
+value: "500,000"
+numeric_value: 500000
+condition: Max plan
+status: active
+concept: context_window
+evidence:
+  - anthropic_models_page
+effective_date: 2025-10-01
+recorded_date: 2025-10-05

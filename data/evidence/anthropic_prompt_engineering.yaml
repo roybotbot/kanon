@@ -1,0 +1,7 @@
+id: anthropic_prompt_engineering
+name: Anthropic Prompt Engineering Guide
+description: Best practices for writing effective prompts
+url: https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering
+source_type: documentation
+last_verified: 2026-03-01
+version: "2026-03"

@@ -1,0 +1,9 @@
+id: lo_configure_tool_use
+name: Configure tool use in the Claude API
+description: Learner can define tool schemas, register them in API requests, and handle tool_use responses
+verb: configure
+concepts:
+  - tool_use
+  - system_prompt
+tasks:
+  - configure_tool_definitions

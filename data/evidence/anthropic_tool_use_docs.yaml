@@ -1,0 +1,7 @@
+id: anthropic_tool_use_docs
+name: Anthropic Tool Use Documentation
+description: Official documentation for Claude's tool use feature
+url: https://docs.anthropic.com/en/docs/build-with-claude/tool-use
+source_type: documentation
+last_verified: 2026-03-01
+version: "2026-03"

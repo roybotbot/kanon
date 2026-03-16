@@ -1,0 +1,9 @@
+id: data_analysis
+name: Data Analysis
+description: Analyzing datasets using Claude's code execution capability
+enables:
+  - enable_code_execution
+content_block: |
+  With code execution enabled, Claude can write and run Python code to analyze data.
+  It can process CSVs, create charts, compute statistics, and generate reports.
+  All computation happens in a sandboxed environment.

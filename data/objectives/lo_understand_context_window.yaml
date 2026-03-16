@@ -1,0 +1,9 @@
+id: lo_understand_context_window
+name: Understand context window limits and implications
+description: Learner can explain how context windows work and choose appropriate strategies for long content
+verb: explain
+concepts:
+  - context_window
+  - tokenization
+tasks:
+  - analyze_long_document

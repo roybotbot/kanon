@@ -1,0 +1,14 @@
+id: set_system_instructions
+name: Set System Instructions
+description: Configure a system prompt to control Claude's behavior in a conversation
+targets:
+  - enterprise_developer
+  - support_engineer
+steps:
+  - Write a system prompt defining Claude's role and constraints
+  - Include the system prompt in the API request
+  - Test with sample conversations to verify behavior
+content_block: |
+  Add a system parameter to your API request with instructions for Claude.
+  The system prompt should clearly state Claude's role, any constraints,
+  preferred output format, and tone. Keep system prompts focused and specific.

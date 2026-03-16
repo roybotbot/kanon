@@ -1,0 +1,5 @@
+id: state_probabilistic_behavior
+name: State probabilistic behavior
+description: Training materials must clearly communicate that Claude's outputs are probabilistic and may vary
+scope: all_assets
+severity: must

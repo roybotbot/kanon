@@ -1,0 +1,9 @@
+id: conversation_control
+name: Conversation Control
+description: Controlling Claude's behavior, tone, and response format through system prompts
+enables:
+  - set_system_instructions
+content_block: |
+  System prompts give you control over how Claude responds. You can set the tone,
+  restrict topics, define output formats, and establish personas. These controls
+  persist across the entire conversation.

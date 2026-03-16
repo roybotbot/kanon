@@ -1,0 +1,9 @@
+id: structured_data_extraction
+name: Structured Data Extraction
+description: Extracting typed fields from unstructured text using Claude's tool use
+enables:
+  - configure_tool_definitions
+content_block: |
+  Claude can extract structured data from unstructured input by using tool definitions
+  as output schemas. You define the fields you want extracted, and Claude returns
+  a tool_use block with the extracted values matching your schema.

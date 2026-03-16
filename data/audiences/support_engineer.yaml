@@ -1,0 +1,8 @@
+id: support_engineer
+name: Support Engineer
+description: Engineers supporting customers who use Claude-based products
+assumed_knowledge: []
+tone: practical
+preferred_formats:
+  - facilitator_guide
+  - checklist

@@ -1,0 +1,15 @@
+id: analyze_long_document
+name: Analyze Long Document
+description: Upload and analyze a document using Claude's large context window
+targets:
+  - enterprise_developer
+  - support_engineer
+steps:
+  - Prepare the document content
+  - Include it in the message content
+  - Ask specific questions about the document
+  - Request structured output if needed
+content_block: |
+  Include the document text directly in your message. For best results,
+  clearly state what you want Claude to do with the document.
+  Use specific questions rather than vague requests like "summarize this."

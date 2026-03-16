@@ -1,0 +1,9 @@
+id: long_document_processing
+name: Long Document Processing
+description: Processing documents that require large context windows
+enables:
+  - analyze_long_document
+content_block: |
+  Claude can process long documents by leveraging its large context window.
+  Documents are included directly in the message content. Claude can summarize,
+  extract information, answer questions, and compare across multiple long documents.

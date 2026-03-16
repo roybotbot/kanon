@@ -1,0 +1,9 @@
+id: api_authentication
+name: API Authentication
+description: The process of authenticating requests to the Anthropic API using API keys
+supports: []
+prerequisites: []
+content_block: |
+  All API requests require authentication via an API key passed in the x-api-key header.
+  API keys are created in the Anthropic Console and should be kept secret.
+  Each key is scoped to a workspace and tracks usage for billing.

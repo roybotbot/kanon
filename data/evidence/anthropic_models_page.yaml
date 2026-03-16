@@ -1,0 +1,7 @@
+id: anthropic_models_page
+name: Anthropic Models Page
+description: Model specifications, context windows, and pricing
+url: https://docs.anthropic.com/en/docs/about-claude/models
+source_type: documentation
+last_verified: 2026-03-01
+version: "2026-03"

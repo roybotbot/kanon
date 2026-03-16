@@ -1,0 +1,9 @@
+id: tokenization
+name: Tokenization
+description: The process of converting text into tokens that language models process
+supports: []
+prerequisites: []
+content_block: |
+  Tokenization breaks text into smaller units called tokens.
+  A token is roughly 3-4 characters of English text.
+  Token counts determine input limits, output limits, and pricing.

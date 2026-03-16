@@ -1,0 +1,15 @@
+id: configure_tool_definitions
+name: Configure Tool Definitions
+description: Define function schemas that Claude can invoke during a conversation
+targets:
+  - enterprise_developer
+steps:
+  - Define the tool name and description
+  - Specify the input schema using JSON Schema
+  - Register the tool in the API request tools array
+  - Handle the tool_use response block
+content_block: |
+  To configure tool use, add a tools array to your API request.
+  Each tool needs a name, description, and input_schema.
+  Claude will return a tool_use content block when it wants to call a tool.
+  Your code must execute the tool and return results in a tool_result message.

@@ -1,0 +1,11 @@
+id: code_exec_python_version_legacy
+claim: Python version
+value: "3.11.0"
+status: superseded
+concept: code_execution
+evidence:
+  - anthropic_code_execution_docs
+effective_date: 2025-05-22
+recorded_date: 2025-06-01
+superseded_date: 2025-09-01
+superseded_by: code_exec_python_version
