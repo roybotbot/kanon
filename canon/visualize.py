@@ -762,7 +762,7 @@ function computeTrail(idx) {{
   trailEdges = new Set();
 
   // BFS limited to 2 hops — shows direct connections only
-  const MAX_DEPTH = 2;
+  const MAX_DEPTH = 1;
   const queue = [[idx, 0]];
   while (queue.length) {{
     const [cur, depth] = queue.shift();
@@ -1029,7 +1029,7 @@ function draw() {{
     }} else if (onTrail) {{
       alpha = 0.9; edgeColor = '#94a3b8'; lw = 2.0;
     }} else {{
-      alpha = 0.06; edgeColor = '#1e293b'; lw = 0.6;
+      alpha = 0.15; edgeColor = '#334155'; lw = 0.8;
     }}
 
     ctx.globalAlpha = alpha;
@@ -1062,8 +1062,8 @@ function draw() {{
     let alpha;
     if (!hasTrail)       alpha = 1.0;
     else if (isSelected) alpha = 1.0;
-    else if (onTrail)    alpha = 0.85;
-    else                 alpha = 0.12;
+    else if (onTrail)    alpha = 0.9;
+    else                 alpha = 0.3;
 
     ctx.globalAlpha = alpha;
 
