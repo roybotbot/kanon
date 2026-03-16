@@ -1022,11 +1022,11 @@ function draw() {{
 
     let alpha, edgeColor, lw;
     if (!hasTrail) {{
-      alpha = 0.55; edgeColor = '#475569'; lw = 1.2;
+      alpha = 0.45; edgeColor = '#475569'; lw = 1.2;
     }} else if (onTrail) {{
-      alpha = 1.0; edgeColor = '#94a3b8'; lw = 2.0;
+      alpha = 0.9; edgeColor = '#94a3b8'; lw = 2.0;
     }} else {{
-      alpha = 0.1; edgeColor = '#1e293b'; lw = 0.8;
+      alpha = 0.06; edgeColor = '#1e293b'; lw = 0.6;
     }}
 
     ctx.globalAlpha = alpha;
@@ -1058,15 +1058,19 @@ function draw() {{
 
     let alpha;
     if (!hasTrail)       alpha = 1.0;
-    else if (onTrail)    alpha = 1.0;
-    else                 alpha = 0.2;
+    else if (isSelected) alpha = 1.0;
+    else if (onTrail)    alpha = 0.85;
+    else                 alpha = 0.12;
 
     ctx.globalAlpha = alpha;
 
-    // Drop shadow
-    if (isSelected || onTrail && hasTrail) {{
+    // Drop shadow — only on the clicked node, subtle on trail
+    if (isSelected) {{
       ctx.shadowColor = node.fg;
-      ctx.shadowBlur  = isSelected ? 14 : 6;
+      ctx.shadowBlur  = 10;
+    }} else if (onTrail && hasTrail) {{
+      ctx.shadowColor = node.fg;
+      ctx.shadowBlur  = 3;
     }} else {{
       ctx.shadowBlur  = 0;
     }}
