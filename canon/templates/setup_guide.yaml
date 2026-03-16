@@ -1,0 +1,7 @@
+name: setup_guide
+sections:
+  - overview
+  - prerequisites
+  - procedure
+  - verification
+  - troubleshooting
