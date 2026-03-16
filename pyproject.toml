@@ -1,0 +1,26 @@
+[project]
+name = "canon"
+version = "0.1.0"
+description = "Ontology-driven knowledge system for training content"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
+    "click>=8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.0",
+]
+llm = [
+    "anthropic>=0.40",
+    "openai>=1.0",
+]
+
+[project.scripts]
+canon = "canon.cli:cli"
+
+[tool.setuptools.packages.find]
+include = ["canon*"]
