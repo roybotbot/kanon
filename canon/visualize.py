@@ -761,20 +761,23 @@ function computeTrail(idx) {{
   trailNodes = new Set([idx]);
   trailEdges = new Set();
 
-  const queue = [idx];
+  // BFS limited to 2 hops — shows direct connections only
+  const MAX_DEPTH = 2;
+  const queue = [[idx, 0]];
   while (queue.length) {{
-    const cur = queue.shift();
+    const [cur, depth] = queue.shift();
+    if (depth >= MAX_DEPTH) continue;
     for (let ei = 0; ei < EDGES.length; ei++) {{
       const e = EDGES[ei];
       if (e.source === cur && !trailNodes.has(e.target)) {{
         trailNodes.add(e.target);
         trailEdges.add(ei);
-        queue.push(e.target);
+        queue.push([e.target, depth + 1]);
       }}
       if (e.target === cur && !trailNodes.has(e.source)) {{
         trailNodes.add(e.source);
         trailEdges.add(ei);
-        queue.push(e.source);
+        queue.push([e.source, depth + 1]);
       }}
     }}
   }}
