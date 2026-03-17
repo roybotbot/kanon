@@ -180,20 +180,62 @@ def status_cmd() -> None:
     Example:
       kanon status
     """
+    from kanon.models.entities import (
+        Capability, Constraint, Evidence, Fact, LearningObjective, Audience,
+    )
+
     g = _get_graph()
-    assets = [e for e in g._entities.values() if isinstance(e, Asset)]
 
-    if not assets:
-        click.echo("No assets found.")
-        return
+    # Count by type
+    type_counts: dict[str, int] = {}
+    facts: list[Fact] = []
+    assets: list[Asset] = []
+    for entity in g._entities.values():
+        tname = type(entity).__name__
+        type_counts[tname] = type_counts.get(tname, 0) + 1
+        if isinstance(entity, Fact):
+            facts.append(entity)
+        elif isinstance(entity, Asset):
+            assets.append(entity)
 
-    click.echo("=== Asset Status ===\n")
-    for asset in sorted(assets, key=lambda a: a.name):
-        score = asset.confidence.overall
-        indicator = "🟢" if score >= 0.70 else "🔴"
-        click.echo(f"{indicator} {asset.name}")
-        click.echo(f"   Confidence: {score:.2f}  |  State: {asset.lifecycle_state}")
-        click.echo()
+    total = len(g._entities)
+    superseded = sum(1 for f in facts if f.status == "superseded")
+    retracted = sum(1 for f in facts if f.status == "retracted")
+
+    click.echo(f"=== Kanon Status ===\n")
+    click.echo(f"Entities: {total}")
+    click.echo(
+        f"  Concepts: {type_counts.get('Concept', 0)}  |  "
+        f"Capabilities: {type_counts.get('Capability', 0)}  |  "
+        f"Tasks: {type_counts.get('Task', 0)}  |  "
+        f"Facts: {type_counts.get('Fact', 0)}"
+    )
+    click.echo(
+        f"  Evidence: {type_counts.get('Evidence', 0)}  |  "
+        f"Audiences: {type_counts.get('Audience', 0)}  |  "
+        f"Objectives: {type_counts.get('LearningObjective', 0)}  |  "
+        f"Constraints: {type_counts.get('Constraint', 0)}"
+    )
+
+    click.echo(f"\nAssets ({len(assets)}):")
+    if assets:
+        for asset in sorted(assets, key=lambda a: a.name):
+            score = asset.confidence.overall
+            indicator = "🟢" if score >= 0.70 else "🔴"
+            click.echo(f"  {indicator} {asset.name}  |  confidence: {score:.2f}  |  state: {asset.lifecycle_state}")
+    else:
+        click.echo("  (none)")
+
+    click.echo(f"\nFacts ({len(facts)}):")
+    flags = []
+    if superseded:
+        flags.append(f"⚠️  {superseded} superseded")
+    if retracted:
+        flags.append(f"⚠️  {retracted} retracted")
+    if flags:
+        click.echo(f"  {'  |  '.join(flags)}")
+    else:
+        click.echo("  ✅ All facts active")
 
 
 # ---------------------------------------------------------------------------
