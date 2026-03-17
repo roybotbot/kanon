@@ -256,6 +256,7 @@ def generate_cmd(template_type: str, concepts: str, audience: str, dry_run: bool
     \b
     Examples:
       kanon generate --type setup_guide --concepts tool_use --audience enterprise_developer --dry-run
+      kanon generate --type setup_guide --concepts tool_use --audience enterprise_developer
       kanon generate --type facilitator_guide --concepts tool_use,system_prompt --audience support_engineer --dry-run
     """
     g = _get_graph()
@@ -264,13 +265,25 @@ def generate_cmd(template_type: str, concepts: str, audience: str, dry_run: bool
     concept_ids = [c.strip() for c in concepts.split(",") if c.strip()]
 
     try:
-        result = generate_asset_dry_run(
-            graph=g,
-            template_name=template_type,
-            concept_ids=concept_ids,
-            audience_id=audience,
-        )
-    except ValueError as exc:
+        if dry_run:
+            result = generate_asset_dry_run(
+                graph=g,
+                template_name=template_type,
+                concept_ids=concept_ids,
+                audience_id=audience,
+            )
+        else:
+            from kanon.generate import generate_asset_llm
+
+            click.echo("Generating with Claude... ", nl=False)
+            result = generate_asset_llm(
+                graph=g,
+                template_name=template_type,
+                concept_ids=concept_ids,
+                audience_id=audience,
+            )
+            click.echo("done.")
+    except (ValueError, RuntimeError) as exc:
         click.echo(f"Error: {exc}")
         return
 
@@ -309,9 +322,13 @@ def generate_cmd(template_type: str, concepts: str, audience: str, dry_run: bool
     click.echo(f"  Concepts:   {', '.join(concept_ids)}")
     click.echo(f"  Audience:   {audience}")
     click.echo(f"  Method:     {result['generation_method']}")
+    if result.get("model"):
+        click.echo(f"  Model:      {result['model']}")
     click.echo(f"  State:      {result['lifecycle_state']}")
     click.echo(f"\n  Saved to:   {asset_path}")
     click.echo(f"  Sections:   {', '.join(result.get('content_blocks', {}).keys())}")
+    if result.get("input_tokens"):
+        click.echo(f"  Tokens:     {result['input_tokens']} in / {result['output_tokens']} out")
 
     logger.log(
         operation="generate",
