@@ -45,6 +45,17 @@ The current implementation is a minimal but complete version of the system, focu
 
 No database, no CMS, no ingestion, no frontend. The knowledge graph ships pre-populated with Claude/AI training domain content. Clone the repo, run the CLI, and see the system work.
 
+```bash
+kanon graph              # list all entities, generate interactive visualization
+kanon graph --concept tool_use   # inspect a specific entity and its connections
+kanon status             # confidence scores and lifecycle state for all assets
+kanon generate --type setup_guide --concepts tool_use --audience enterprise_developer --dry-run
+kanon generate --type setup_guide --concepts tool_use --audience enterprise_developer
+kanon drift --evidence anthropic_tool_use_docs --change "API format changed"
+```
+
+The `graph` command generates an interactive HTML visualization at `docs/graph.html` showing all entities and their relationships. The `generate` and `drift` commands produce scoped visualizations highlighting the entities involved.
+
 ## Validation
 
 The PoC is validated against three stages with automated tests and documented findings. See [VALIDATION.md](VALIDATION.md) for full results.
