@@ -275,15 +275,44 @@ def generate_cmd(template_type: str, concepts: str, audience: str, dry_run: bool
         click.echo(f"Error: {exc}")
         return
 
-    click.echo(f"=== Generated Asset ===")
-    click.echo(f"Name: {result['name']}")
-    click.echo(f"Type: {result['delivery_format']}  |  State: {result['lifecycle_state']}")
-    click.echo(f"\n--- Content Preview ---")
-    # Print first 1000 chars of content
-    content = result.get("content", "")
-    click.echo(content[:1000])
-    if len(content) > 1000:
-        click.echo("... (truncated)")
+    # Save asset to file
+    asset_id = "_".join(concept_ids) + f"_{template_type}"
+    asset_path = Path(__file__).parent.parent / "data" / "assets" / f"{asset_id}.yaml"
+
+    import yaml
+    asset_data = {
+        "id": asset_id,
+        "name": result["name"],
+        "asset_type": "guide",
+        "delivery_format": result["delivery_format"],
+        "lifecycle_state": result["lifecycle_state"],
+        "teaches": result["teaches"],
+        "targets": result["targets"],
+        "evidence_links": result.get("evidence_links", []),
+        "generation_method": result["generation_method"],
+        "generated_at": result["generated_at"],
+        "last_updated": result["last_updated"],
+        "confidence": {
+            "evidence": 1.0,
+            "freshness": 1.0,
+            "structural": 1.0,
+            "transformation": 1.0 if result["generation_method"] == "dry_run" else 0.7,
+            "overall": 1.0 if result["generation_method"] == "dry_run" else 0.94,
+        },
+        "content": result.get("content", ""),
+    }
+    asset_path.write_text(yaml.dump(asset_data, default_flow_style=False, sort_keys=False))
+
+    # Summary output
+    click.echo(f"=== Generated Asset ===\n")
+    click.echo(f"  Name:       {result['name']}")
+    click.echo(f"  Template:   {result['delivery_format']}")
+    click.echo(f"  Concepts:   {', '.join(concept_ids)}")
+    click.echo(f"  Audience:   {audience}")
+    click.echo(f"  Method:     {result['generation_method']}")
+    click.echo(f"  State:      {result['lifecycle_state']}")
+    click.echo(f"\n  Saved to:   {asset_path}")
+    click.echo(f"  Sections:   {', '.join(result.get('content_blocks', {}).keys())}")
 
     logger.log(
         operation="generate",
