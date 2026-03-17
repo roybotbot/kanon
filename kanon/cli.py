@@ -1,7 +1,6 @@
 """Kanon CLI — graph, status, generate, and drift commands."""
 from __future__ import annotations
 
-import webbrowser
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -158,13 +157,13 @@ def graph_cmd(concept: str | None, gaps: bool) -> None:
 
 
 def _open_graph_html(g: KnowledgeGraph) -> None:
-    """Generate docs/graph.html and open it in the default browser."""
+    """Generate docs/graph.html and print the path."""
     from kanon.visualize import generate_graph_html
 
     html_path = generate_graph_html(
         g, Path(__file__).parent.parent / "docs" / "graph.html"
     )
-    webbrowser.open(f"file://{html_path.resolve()}")
+    click.echo(f"\n  Graph: file://{html_path.resolve()}")
 
 
 # ---------------------------------------------------------------------------
@@ -339,7 +338,7 @@ def generate_cmd(template_type: str, concepts: str, audience: str, dry_run: bool
         subtitle=f"{result['name']} for {audience}",
         output_path=scoped_path,
     )
-    webbrowser.open(f"file://{html_path.resolve()}")
+    click.echo(f"\n  Visualization: file://{html_path.resolve()}")
 
 
 # ---------------------------------------------------------------------------
@@ -419,4 +418,4 @@ def drift_cmd(evidence_id: str, change_description: str) -> None:
         subtitle=f"Evidence changed: {evidence_id} — {change_description}",
         output_path=scoped_path,
     )
-    webbrowser.open(f"file://{html_path.resolve()}")
+    click.echo(f"\n  Visualization: file://{html_path.resolve()}")
