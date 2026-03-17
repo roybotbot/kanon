@@ -121,20 +121,11 @@ To validate that the system generalizes beyond the Claude/AI training domain, we
 
 ## Current status
 
+All stages complete. See [VALIDATION.md](../../VALIDATION.md) for full results.
+
 | Stage | Status | Notes |
 |-------|--------|-------|
-| Stage 1: Generation | Partially done | LLM generation works, dry-run has bugs, audience adaptation untested, second domain not started |
-| Stage 2: Review | Not started | Confidence scoring exists as code but hasn't been validated against real scenarios |
-| Stage 3: Drift | Partially done | Drift detection works mechanically, but no end-to-end lifecycle test |
-| Second domain | Not started | Food/recipe entities need to be created |
-
----
-
-## Order of work
-
-1. Fix dry-run generation bugs (verification/troubleshooting fallback)
-2. Create food/recipe knowledge graph entities
-3. Run Stage 1 tests across both domains
-4. Build traceability tooling for Stage 2
-5. Run full drift lifecycle for Stage 3
-6. Document results — what worked, what didn't, what the PoC proves
+| Stage 1: Generation | ✅ Complete | 7 pass, 0 fail. Dry-run bug fixed. Food domain works. |
+| Stage 2: Review | ✅ Complete | 6 pass, 0 fail. Evidence traceability bug fixed. |
+| Stage 3: Drift | ✅ Complete | 7 pass, 0 fail. Full lifecycle validated across both domains. |
+| Second domain | ✅ Complete | Food/recipe ontology validates generalization. |
