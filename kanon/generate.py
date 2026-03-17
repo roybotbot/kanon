@@ -238,11 +238,16 @@ def generate_asset_llm(
 
     system_prompt = (
         "You are a training content generator for the Kanon knowledge system. "
-        "You produce accurate, well-structured training materials derived strictly "
-        "from the provided knowledge graph data. Do not invent facts — only use "
-        "what is provided in the knowledge context below. If information is missing "
-        "for a section, note that explicitly rather than fabricating content.\n\n"
-        "Write in Markdown format. Adapt your language and depth to the target audience."
+        "You produce well-structured training materials using ONLY the knowledge "
+        "context provided below. This is a strict constraint:\n\n"
+        "- Do NOT add code examples, URLs, API snippets, or technical details "
+        "that are not explicitly present in the knowledge context.\n"
+        "- Do NOT draw on your own knowledge of APIs, products, or tools.\n"
+        "- If a section cannot be filled with the provided context, write: "
+        "\"[Insufficient knowledge graph coverage — add more entities to populate this section.]\"\n"
+        "- Your job is to organize, clarify, and adapt the provided content for "
+        "the target audience — not to supplement it.\n\n"
+        "Write in Markdown format. Adapt tone and structure to the target audience."
     )
 
     user_prompt = (

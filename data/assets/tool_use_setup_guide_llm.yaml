@@ -9,149 +9,100 @@ targets:
 - enterprise_developer
 evidence_links: []
 generation_method: llm
-generated_at: '2026-03-17T08:27:15.356253+00:00'
-last_updated: '2026-03-17T08:27:15.356253+00:00'
+generated_at: '2026-03-17T08:36:14.080670+00:00'
+last_updated: '2026-03-17T08:36:14.080670+00:00'
 confidence:
   evidence: 1.0
   freshness: 1.0
   structural: 1.0
   transformation: 0.7
   overall: 0.94
-content: "# Tool Use Setup Guide\n\n**Audience:** Enterprise Developer \u2014 Backend\
-  \ engineers integrating Claude via the API\n**Topic:** Enabling Claude to call external\
-  \ functions and APIs\n\n---\n\n## Overview\n\nTool use allows Claude to invoke external\
-  \ functions and APIs that you define as part of your integration. Rather than generating\
-  \ a plain text response, Claude can recognize when a user's request requires external\
-  \ data or computation, emit a structured `tool_use` response block identifying which\
-  \ function to call and with what arguments, and then incorporate the result into\
-  \ a final answer once your backend executes the function and returns the output.\n\
-  \nThis capability is useful for scenarios such as fetching live data, querying internal\
-  \ databases, triggering workflows, or calling third-party APIs \u2014 all orchestrated\
-  \ through a single conversational interface.\n\n**High-level flow:**\n\n```\nClient\
-  \ \u2192 API Request (with tool definitions) \u2192 Claude\nClaude \u2192 tool_use\
-  \ block (function name + arguments)\nClient \u2192 executes function \u2192 returns\
-  \ tool_result\nClaude \u2192 final response incorporating tool output\n```\n\n---\n\
-  \n## Prerequisites\n\nBefore configuring tool use, ensure the following are in place:\n\
-  \n| Requirement | Details |\n|---|---|\n| **API Authentication** (`api_authentication`)\
-  \ | You must have a valid Anthropic API key and an authenticated HTTP client configured.\
-  \ Tool use is not available to unauthenticated requests. |\n| **System Prompt**\
-  \ (`system_prompt`) | A system prompt should be defined to establish Claude's role,\
-  \ constraints, and behavior. This is especially important when tools are present,\
-  \ as it helps Claude understand when and how to invoke them. |\n| **JSON Schema\
-  \ familiarity** | Tool input schemas are defined using [JSON Schema](https://json-schema.org/).\
-  \ You should be comfortable writing basic JSON Schema definitions (`type`, `properties`,\
-  \ `required`, etc.). |\n| **Backend execution environment** | Your application must\
-  \ be capable of receiving the `tool_use` block, routing the call to the appropriate\
-  \ function, and returning results to the API in a follow-up request. |\n\n> **Note:**\
-  \ If API authentication is not yet configured, complete that setup before proceeding.\
-  \ Attempting tool use without a valid API key will result in `401 Unauthorized`\
-  \ errors.\n\n---\n\n## Procedure\n\n### Step 1 \u2014 Write a System Prompt\n\n\
-  Add a `system` parameter to your API request that establishes Claude's role and\
-  \ clarifies the tools available to it. Keep the prompt focused and specific.\n\n\
-  ```json\n{\n  \"system\": \"You are a backend assistant for an inventory management\
-  \ system. Use the provided tools to look up product stock levels and order history.\
-  \ Only call a tool when the user's request requires real-time data.\"\n}\n```\n\n\
-  **Guidance:**\n- State Claude's role clearly.\n- Indicate the purpose of the tools\
-  \ so Claude can make informed decisions about when to invoke them.\n- Define any\
-  \ constraints (e.g., \"Do not call tools for general knowledge questions\").\n\n\
-  ---\n\n### Step 2 \u2014 Define Tool Schemas\n\nEach tool requires three fields:\
-  \ `name`, `description`, and `input_schema`. Add these to a `tools` array in your\
-  \ API request body.\n\n```json\n{\n  \"tools\": [\n    {\n      \"name\": \"get_stock_level\"\
-  ,\n      \"description\": \"Returns the current stock quantity for a given product\
-  \ SKU.\",\n      \"input_schema\": {\n        \"type\": \"object\",\n        \"\
-  properties\": {\n          \"sku\": {\n            \"type\": \"string\",\n     \
-  \       \"description\": \"The product SKU identifier, e.g. 'WIDGET-42'.\"\n   \
-  \       }\n        },\n        \"required\": [\"sku\"]\n      }\n    }\n  ]\n}\n\
-  ```\n\n**Guidance:**\n- **`name`** \u2014 Use a concise, snake_case identifier that\
-  \ matches your internal function name where possible.\n- **`description`** \u2014\
-  \ Write this for Claude, not for humans reading the code. Claude uses this description\
-  \ to decide whether to invoke the tool, so be precise about what the tool does and\
-  \ when it is appropriate to call it.\n- **`input_schema`** \u2014 Use standard JSON\
-  \ Schema. Mark all required fields explicitly in the `required` array.\n\n---\n\n\
-  ### Step 3 \u2014 Send the Initial API Request\n\nCombine the system prompt, tool\
-  \ definitions, and the user's message in a single request.\n\n```json\nPOST https://api.anthropic.com/v1/messages\n\
-  \n{\n  \"model\": \"claude-opus-4-5\",\n  \"max_tokens\": 1024,\n  \"system\": \"\
-  You are a backend assistant for an inventory management system...\",\n  \"tools\"\
-  : [ /* tool definitions from Step 2 */ ],\n  \"messages\": [\n    {\n      \"role\"\
-  : \"user\",\n      \"content\": \"How many units of WIDGET-42 do we have in stock?\"\
-  \n    }\n  ]\n}\n```\n\n---\n\n### Step 4 \u2014 Handle the `tool_use` Response\
-  \ Block\n\nIf Claude determines a tool call is needed, it returns a response with\
-  \ `stop_reason: \"tool_use\"` and a `content` array containing a `tool_use` block.\n\
-  \n**Example response:**\n\n```json\n{\n  \"id\": \"msg_01XFDUDYJgAACehvsiVbJ9Er\"\
-  ,\n  \"type\": \"message\",\n  \"role\": \"assistant\",\n  \"stop_reason\": \"tool_use\"\
-  ,\n  \"content\": [\n    {\n      \"type\": \"tool_use\",\n      \"id\": \"toolu_01A09q90qw90lq917835lq9\"\
-  ,\n      \"name\": \"get_stock_level\",\n      \"input\": {\n        \"sku\": \"\
-  WIDGET-42\"\n      }\n    }\n  ]\n}\n```\n\n**Your application must:**\n1. Detect\
-  \ `stop_reason === \"tool_use\"` in the response.\n2. Extract the `name` and `input`\
-  \ fields from the `tool_use` block.\n3. Route the call to the appropriate internal\
-  \ function.\n4. Capture the function's return value.\n\n---\n\n### Step 5 \u2014\
-  \ Return the Tool Result\n\nSend a follow-up API request that includes the full\
-  \ conversation history plus a `tool_result` message.\n\n```json\n{\n  \"model\"\
-  : \"claude-opus-4-5\",\n  \"max_tokens\": 1024,\n  \"system\": \"...\",\n  \"tools\"\
-  : [ /* same tool definitions */ ],\n  \"messages\": [\n    {\n      \"role\": \"\
-  user\",\n      \"content\": \"How many units of WIDGET-42 do we have in stock?\"\
-  \n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": [\n        {\n\
-  \          \"type\": \"tool_use\",\n          \"id\": \"toolu_01A09q90qw90lq917835lq9\"\
-  ,\n          \"name\": \"get_stock_level\",\n          \"input\": { \"sku\": \"\
-  WIDGET-42\" }\n        }\n      ]\n    },\n    {\n      \"role\": \"user\",\n  \
-  \    \"content\": [\n        {\n          \"type\": \"tool_result\",\n         \
-  \ \"tool_use_id\": \"toolu_01A09q90qw90lq917835lq9\",\n          \"content\": \"\
-  342\"\n        }\n      ]\n    }\n  ]\n}\n```\n\n> **Important:** The `tool_use_id`\
-  \ in your `tool_result` must exactly match the `id` field from the `tool_use` block.\
-  \ A mismatch will cause an API error.\n\n---\n\n### Step 6 \u2014 Process Claude's\
-  \ Final Response\n\nClaude will now return a standard `stop_reason: \"end_turn\"\
-  ` response incorporating the tool result.\n\n```json\n{\n  \"stop_reason\": \"end_turn\"\
-  ,\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"There are\
-  \ currently 342 units of WIDGET-42 in stock.\"\n    }\n  ]\n}\n```\n\nExtract the\
-  \ `text` content and return it to your user or downstream system as needed.\n\n\
-  ---\n\n## Verification\n\nUse the following checklist to confirm your tool use integration\
-  \ is working correctly end-to-end:\n\n- [ ] **Tool definition accepted** \u2014\
-  \ The initial API request returns a `200 OK` with no schema validation errors. A\
-  \ malformed `input_schema` will result in a `400 Bad Request`.\n- [ ] **`tool_use`\
-  \ block triggered** \u2014 Given a user query clearly requiring the tool, the response\
-  \ contains `\"stop_reason\": \"tool_use\"` and a well-formed `tool_use` content\
-  \ block with correct `name` and `input` values.\n- [ ] **Arguments are correctly\
-  \ typed** \u2014 The `input` object conforms to your defined JSON Schema (correct\
-  \ types, required fields present).\n- [ ] **`tool_result` accepted** \u2014 The\
-  \ follow-up request with the `tool_result` message returns `200 OK` without errors.\n\
-  - [ ] **Final response is coherent** \u2014 Claude's final answer correctly incorporates\
-  \ the tool result and responds to the user's original intent.\n- [ ] **Tool not\
-  \ called unnecessarily** \u2014 For a query that does not require external data\
-  \ (e.g., \"What is 10 + 5?\"), Claude responds directly without emitting a `tool_use`\
-  \ block.\n\n---\n\n## Troubleshooting\n\n### `400 Bad Request` \u2014 Invalid tool\
-  \ definition\n\n**Symptom:** API returns a 400 error on the initial request.\n\n\
-  **Likely causes:**\n- `input_schema` is missing the `\"type\": \"object\"` field\
-  \ at the top level.\n- A field listed in `required` is not defined under `properties`.\n\
-  - `name` contains spaces or special characters (use `snake_case` only).\n\n**Resolution:**\
-  \ Validate your `input_schema` independently against the JSON Schema specification\
-  \ before including it in the request. Ensure `name` matches the pattern `[a-zA-Z_][a-zA-Z0-9_]*`.\n\
-  \n---\n\n### Claude never calls the tool\n\n**Symptom:** Claude always responds\
-  \ with plain text even for queries that should trigger a tool call.\n\n**Likely\
-  \ causes:**\n- The tool `description` is vague or does not match the user's phrasing.\n\
-  - The system prompt is discouraging tool use (e.g., overly restrictive instructions).\n\
-  - The user's query does not clearly imply a need for the tool.\n\n**Resolution:**\n\
-  - Rewrite the `description` to be explicit about what data the tool returns and\
-  \ when it should be used.\n- Review your system prompt for language that might suppress\
-  \ tool calls.\n- Test with a query that directly mirrors the tool description.\n\
-  \n---\n\n### `tool_use_id` mismatch error\n\n**Symptom:** The follow-up request\
-  \ with `tool_result` returns an error about an unrecognized tool use ID.\n\n**Likely\
-  \ cause:** The `tool_use_id` in the `tool_result` block does not exactly match the\
-  \ `id` from the `tool_use` block in Claude's response.\n\n**Resolution:** Store\
-  \ the entire `tool_use` content block from Claude's response and reference `block.id`\
-  \ directly when constructing the `tool_result`. Do not hardcode or modify the ID.\n\
-  \n---\n\n### Claude calls a tool with incorrect or missing arguments\n\n**Symptom:**\
-  \ The `input` object in the `tool_use` block is missing required fields or contains\
-  \ wrong types.\n\n**Likely cause:** The `input_schema` `description` fields are\
-  \ insufficient for Claude to understand what values to supply.\n\n**Resolution:**\
-  \ Add more descriptive `description` values to each property in your schema. Include\
-  \ examples where helpful (e.g., `\"The product SKU, e.g. 'WIDGET-42'\"`). Ensure\
-  \ `required` accurately reflects mandatory parameters.\n\n---\n\n### Tool result\
-  \ not reflected in final response\n\n**Symptom:** Claude's final answer ignores\
-  \ or contradicts the value returned in `tool_result`.\n\n**Likely cause:** The `tool_result`\
-  \ `content` field is empty, malformed, or not included in the correct message in\
-  \ the conversation history.\n\n**Resolution:** Ensure the `tool_result` message\
-  \ is appended to the `messages` array as a `user` role message immediately following\
-  \ the assistant's `tool_use` message. Verify the `content` field contains a non-empty\
-  \ string or structured content block.\n\n---\n\n*For additional reference, consult\
-  \ the Anthropic API documentation on the Messages endpoint and the official JSON\
-  \ Schema specification.*"
+content: "# Setup Guide: Tool Use with Claude API\n\n**Audience:** Backend Engineers\
+  \ (Enterprise)\n**Difficulty:** Intermediate\n**Assumed Knowledge:** API authentication\
+  \ with Claude\n\n---\n\n## Overview\n\nTool use enables Claude to interact with\
+  \ external functions and APIs that you define. Rather than responding purely with\
+  \ text, Claude can identify when a user request requires calling an external function,\
+  \ return a structured `tool_use` response block, and allow your backend to execute\
+  \ the function and return results back into the conversation.\n\nThis guide walks\
+  \ through configuring tool definitions, setting appropriate system instructions,\
+  \ and verifying that your integration handles the tool call lifecycle correctly.\n\
+  \n**Key concepts:**\n\n- You define the tools \u2014 Claude decides when to use\
+  \ them.\n- Tool definitions include a name, description, and JSON Schema for inputs.\n\
+  - The conversation loop must handle `tool_use` response blocks and return results\
+  \ via a `tool_result` message.\n\n---\n\n## Prerequisites\n\nBefore beginning, confirm\
+  \ the following are in place:\n\n| Requirement | Details |\n|---|---|\n| **API Authentication**\
+  \ | You have valid credentials and can successfully authenticate against the Claude\
+  \ API. |\n| **System Prompt Access** | Your API request structure supports a `system`\
+  \ parameter. |\n| **JSON Schema Familiarity** | You can define input schemas using\
+  \ JSON Schema syntax, as this is required for tool definitions. |\n| **Backend Execution\
+  \ Environment** | Your application can execute arbitrary functions/calls and re-inject\
+  \ results into an API request. |\n\n> **Note:** Tool use depends on both `api_authentication`\
+  \ and `system_prompt` being operational. Do not proceed if either prerequisite is\
+  \ unverified.\n\n---\n\n## Procedure\n\n### Step 1: Write a System Prompt\n\nConfigure\
+  \ a system prompt to establish Claude's role and behavioral constraints within your\
+  \ application context. A focused, specific system prompt improves tool-use accuracy.\n\
+  \n1. Write a system prompt that clearly defines:\n   - Claude's role in your application\n\
+  \   - Any constraints on behavior or scope\n   - Preferred output format and tone\n\
+  2. Add a `system` parameter to your API request body containing this prompt.\n3.\
+  \ Keep the system prompt focused \u2014 avoid combining unrelated instructions.\n\
+  \n**Checklist:**\n- [ ] Role and purpose are clearly stated\n- [ ] Constraints are\
+  \ explicit\n- [ ] System prompt is included in the API request\n\n---\n\n### Step\
+  \ 2: Define Your Tools\n\nEach tool must have three components: a **name**, a **description**,\
+  \ and an **input schema**.\n\n1. **Define the tool name and description**\n   -\
+  \ The name should be a concise identifier for the function.\n   - The description\
+  \ should explain what the tool does and when Claude should use it. This is critical\
+  \ \u2014 Claude relies on the description to decide whether to invoke the tool.\n\
+  \n2. **Specify the input schema using JSON Schema**\n   - Define all parameters\
+  \ the tool accepts, including types and which are required.\n   - Be precise; ambiguous\
+  \ schemas can produce malformed tool calls.\n\n3. **Register the tool in the API\
+  \ request**\n   - Add a `tools` array to your API request body.\n   - Each entry\
+  \ in the array should contain the `name`, `description`, and `input_schema` fields.\n\
+  \n**Checklist:**\n- [ ] Each tool has a unique, descriptive name\n- [ ] Descriptions\
+  \ clearly communicate intended use\n- [ ] Input schemas cover all required and optional\
+  \ parameters\n- [ ] `tools` array is present in the API request\n\n---\n\n### Step\
+  \ 3: Handle the `tool_use` Response Block\n\nWhen Claude determines a tool should\
+  \ be called, it returns a `tool_use` content block in its response rather than a\
+  \ plain text reply.\n\n1. **Detect the `tool_use` content block** in the API response.\n\
+  2. **Extract the tool name and input arguments** from the block.\n3. **Execute the\
+  \ corresponding function** in your backend using the provided arguments.\n4. **Return\
+  \ the result** to the conversation by sending a `tool_result` message back to the\
+  \ API.\n5. **Continue the conversation loop** \u2014 Claude will process the tool\
+  \ result and generate its final response.\n\n**Checklist:**\n- [ ] Response parsing\
+  \ handles `tool_use` blocks\n- [ ] Tool execution logic is mapped to tool names\n\
+  - [ ] Results are formatted and returned as `tool_result` messages\n- [ ] Conversation\
+  \ loop continues after tool result is submitted\n\n---\n\n## Verification\n\nUse\
+  \ the following checks to confirm your tool use integration is functioning correctly\
+  \ end-to-end:\n\n| Check | Expected Outcome |\n|---|---|\n| Send a request that\
+  \ clearly requires a tool | Claude returns a `tool_use` content block, not a plain\
+  \ text response |\n| Inspect the `tool_use` block | Contains the correct tool name\
+  \ and well-formed input arguments matching your schema |\n| Submit a `tool_result`\
+  \ message | Claude processes the result and returns a coherent final response |\n\
+  | Send a request that does NOT require a tool | Claude responds with plain text\
+  \ only \u2014 no spurious `tool_use` blocks |\n| Test with an ambiguous request\
+  \ | Verify Claude's tool selection aligns with your description intent |\n\nIf all\
+  \ checks pass, your integration is correctly handling the full tool call lifecycle.\n\
+  \n---\n\n## Troubleshooting\n\n### Claude is not calling the tool when expected\n\
+  \n- **Review the tool description.** Claude uses the description to determine relevance.\
+  \ If the description is vague or incomplete, Claude may not recognize when the tool\
+  \ applies. Make it explicit about the scenarios in which the tool should be used.\n\
+  - **Check the system prompt for conflicts.** If the system prompt contains constraints\
+  \ that inadvertently restrict tool use, Claude may suppress tool calls. Review for\
+  \ contradictory instructions.\n\n---\n\n### Claude is calling the tool when it should\
+  \ not be\n\n- **Tighten the tool description.** Overly broad descriptions can cause\
+  \ Claude to invoke tools unnecessarily. Scope the description to specific, intended\
+  \ use cases.\n- **Add explicit guidance in the system prompt** clarifying when tools\
+  \ should and should not be used.\n\n---\n\n### The `tool_use` block contains unexpected\
+  \ or malformed inputs\n\n- **Review your `input_schema` definition.** Ambiguous\
+  \ or loosely typed schemas can result in Claude generating inputs that do not match\
+  \ your expected format. Add stricter type constraints and mark fields as required\
+  \ where appropriate.\n\n---\n\n### Tool results are not being processed by Claude\n\
+  \n- **Verify the `tool_result` message format.** Ensure the result is being returned\
+  \ as a properly structured message in the conversation. If the format is incorrect,\
+  \ Claude may not recognize it as a tool response.\n- **Check the conversation turn\
+  \ order.** Tool results must be submitted before Claude can generate a follow-up\
+  \ response. Verify your conversation loop is sequencing messages correctly.\n\n\
+  ---\n\n### Authentication errors during tool use requests\n\n- **Confirm prerequisites\
+  \ are met.** Tool use requires API authentication to be fully functional. Re-verify\
+  \ your credentials and authentication flow before debugging tool-specific behavior.\n\
+  \n---\n\n*For additional coverage of advanced tool use patterns, consider adding\
+  \ further entities to your knowledge graph.*"
