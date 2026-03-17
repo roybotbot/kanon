@@ -1,8 +1,8 @@
 # tests/test_loader.py
 import pytest
 from pathlib import Path
-from canon.loader import load_entities_from_dir
-from canon.models.entities import Concept
+from kanon.loader import load_entities_from_dir
+from kanon.models.entities import Concept
 
 
 class TestLoader:

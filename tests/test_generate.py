@@ -1,11 +1,11 @@
-"""Tests for canon/generate.py — dry-run asset generation."""
+"""Tests for kanon/generate.py — dry-run asset generation."""
 from __future__ import annotations
 
 import pytest
 
-from canon.generate import generate_asset_dry_run, load_template
-from canon.graph import KnowledgeGraph
-from canon.models.entities import Audience, Concept
+from kanon.generate import generate_asset_dry_run, load_template
+from kanon.graph import KnowledgeGraph
+from kanon.models.entities import Audience, Concept
 
 
 # ---------------------------------------------------------------------------

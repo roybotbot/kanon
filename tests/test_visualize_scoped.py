@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
-from canon.graph import KnowledgeGraph
-from canon.visualize import generate_scoped_html
+from kanon.graph import KnowledgeGraph
+from kanon.visualize import generate_scoped_html
 
 
 @pytest.fixture

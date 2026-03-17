@@ -1,7 +1,7 @@
 # tests/test_drift.py
 import pytest
-from canon.graph import KnowledgeGraph
-from canon.drift import detect_drift, DriftReport
+from kanon.graph import KnowledgeGraph
+from kanon.drift import detect_drift, DriftReport
 
 
 @pytest.fixture

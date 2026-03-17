@@ -1,4 +1,4 @@
-# canon/loader.py
+# kanon/loader.py
 from pathlib import Path
 from typing import TypeVar, Type
 import yaml

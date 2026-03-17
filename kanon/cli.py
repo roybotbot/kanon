@@ -1,4 +1,4 @@
-"""Canon CLI — graph, status, generate, and drift commands."""
+"""Kanon CLI — graph, status, generate, and drift commands."""
 from __future__ import annotations
 
 import webbrowser
@@ -8,11 +8,11 @@ from pathlib import Path
 
 import click
 
-from canon.audit import AuditLogger
-from canon.drift import detect_drift
-from canon.generate import generate_asset_dry_run
-from canon.graph import KnowledgeGraph
-from canon.models.entities import Asset, Concept, Task
+from kanon.audit import AuditLogger
+from kanon.drift import detect_drift
+from kanon.generate import generate_asset_dry_run
+from kanon.graph import KnowledgeGraph
+from kanon.models.entities import Asset, Concept, Task
 
 DATA_DIR = Path(__file__).parent.parent / "data"
 LOG_PATH = Path(__file__).parent.parent / "logs" / "audit.jsonl"
@@ -28,22 +28,22 @@ def _get_logger() -> AuditLogger:
 
 @click.group()
 def cli() -> None:
-    """Canon — ontology-driven knowledge system for training content.
+    """Kanon — ontology-driven knowledge system for training content.
 
-    Canon models training knowledge as structured entities (concepts, facts,
+    Kanon models training knowledge as structured entities (concepts, facts,
     evidence, tasks, assets) connected through an ontology. It generates
     training materials from these knowledge objects and detects when source
     material changes make content stale.
 
     \b
     Quick start:
-      canon graph                     Browse all entities and open interactive visualization
-      canon graph --concept tool_use  Inspect a specific entity and its connections
-      canon graph --gaps              Find concepts and tasks without training assets
-      canon status                    See confidence scores for all assets
-      canon generate --type setup_guide --concepts tool_use --audience enterprise_developer --dry-run
+      kanon graph                     Browse all entities and open interactive visualization
+      kanon graph --concept tool_use  Inspect a specific entity and its connections
+      kanon graph --gaps              Find concepts and tasks without training assets
+      kanon status                    See confidence scores for all assets
+      kanon generate --type setup_guide --concepts tool_use --audience enterprise_developer --dry-run
                                       Generate a training asset from knowledge objects
-      canon drift --evidence anthropic_tool_use_docs --change "API format changed"
+      kanon drift --evidence anthropic_tool_use_docs --change "API format changed"
                                       Report a source change and see what's affected
     """
 
@@ -61,9 +61,9 @@ def graph_cmd(concept: str | None, gaps: bool) -> None:
 
     \b
     Examples:
-      canon graph                     List all entities, open HTML visualization
-      canon graph --concept tool_use  Show Tool Use and its connections
-      canon graph --gaps              Find concepts/tasks missing training assets
+      kanon graph                     List all entities, open HTML visualization
+      kanon graph --concept tool_use  Show Tool Use and its connections
+      kanon graph --gaps              Find concepts/tasks missing training assets
     """
     g = _get_graph()
 
@@ -159,7 +159,7 @@ def graph_cmd(concept: str | None, gaps: bool) -> None:
 
 def _open_graph_html(g: KnowledgeGraph) -> None:
     """Generate docs/graph.html and open it in the default browser."""
-    from canon.visualize import generate_graph_html
+    from kanon.visualize import generate_graph_html
 
     html_path = generate_graph_html(
         g, Path(__file__).parent.parent / "docs" / "graph.html"
@@ -178,7 +178,7 @@ def status_cmd() -> None:
 
     \b
     Example:
-      canon status
+      kanon status
     """
     g = _get_graph()
     assets = [e for e in g._entities.values() if isinstance(e, Asset)]
@@ -214,8 +214,8 @@ def generate_cmd(template_type: str, concepts: str, audience: str, dry_run: bool
 
     \b
     Examples:
-      canon generate --type setup_guide --concepts tool_use --audience enterprise_developer --dry-run
-      canon generate --type facilitator_guide --concepts tool_use,system_prompt --audience support_engineer --dry-run
+      kanon generate --type setup_guide --concepts tool_use --audience enterprise_developer --dry-run
+      kanon generate --type facilitator_guide --concepts tool_use,system_prompt --audience support_engineer --dry-run
     """
     g = _get_graph()
     logger = _get_logger()
@@ -250,7 +250,7 @@ def generate_cmd(template_type: str, concepts: str, audience: str, dry_run: bool
     )
 
     # Scoped visualization
-    from canon.visualize import generate_scoped_html
+    from kanon.visualize import generate_scoped_html
 
     involved = set(concept_ids)
     involved.add(audience)
@@ -287,8 +287,8 @@ def drift_cmd(evidence_id: str, change_description: str) -> None:
 
     \b
     Examples:
-      canon drift --evidence anthropic_tool_use_docs --change "Tool schema format updated"
-      canon drift --evidence anthropic_models_page --change "Context window increased to 500K"
+      kanon drift --evidence anthropic_tool_use_docs --change "Tool schema format updated"
+      kanon drift --evidence anthropic_models_page --change "Context window increased to 500K"
     """
     g = _get_graph()
     logger = _get_logger()
@@ -326,7 +326,7 @@ def drift_cmd(evidence_id: str, change_description: str) -> None:
     )
 
     # Scoped visualization
-    from canon.visualize import generate_scoped_html
+    from kanon.visualize import generate_scoped_html
 
     involved = set([evidence_id])
     for f in report.stale_facts:

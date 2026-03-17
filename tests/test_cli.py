@@ -1,6 +1,6 @@
 import pytest
 from click.testing import CliRunner
-from canon.cli import cli
+from kanon.cli import cli
 
 
 @pytest.fixture

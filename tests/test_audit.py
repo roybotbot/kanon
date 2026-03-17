@@ -1,7 +1,7 @@
 import json
 import pytest
 from pathlib import Path
-from canon.audit import AuditLogger
+from kanon.audit import AuditLogger
 
 class TestAuditLogger:
     def test_log_creates_file(self, tmp_path):

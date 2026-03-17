@@ -1,4 +1,4 @@
-# canon/graph.py
+# kanon/graph.py
 """KnowledgeGraph: loads all entity types and builds forward/reverse indexes."""
 from __future__ import annotations
 
@@ -9,8 +9,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from canon.loader import load_entities_from_dir
-from canon.models.entities import (
+from kanon.loader import load_entities_from_dir
+from kanon.models.entities import (
     Asset,
     Audience,
     Capability,

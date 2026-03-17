@@ -2,11 +2,11 @@
 """End-to-end test: load real seed data, run all operations."""
 import pytest
 from pathlib import Path
-from canon.graph import KnowledgeGraph
-from canon.confidence import calculate_confidence, needs_review
-from canon.drift import detect_drift
-from canon.generate import generate_asset_dry_run
-from canon.audit import AuditLogger
+from kanon.graph import KnowledgeGraph
+from kanon.confidence import calculate_confidence, needs_review
+from kanon.drift import detect_drift
+from kanon.generate import generate_asset_dry_run
+from kanon.audit import AuditLogger
 
 
 DATA_DIR = Path(__file__).parent.parent / "data"

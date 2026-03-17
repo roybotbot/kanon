@@ -1,5 +1,5 @@
 [project]
-name = "canon"
+name = "kanon"
 version = "0.1.0"
 description = "Ontology-driven knowledge system for training content"
 requires-python = ">=3.11"
@@ -20,7 +20,7 @@ llm = [
 ]
 
 [project.scripts]
-canon = "canon.cli:cli"
+kanon = "kanon.cli:cli"
 
 [tool.setuptools.packages.find]
-include = ["canon*"]
+include = ["kanon*"]

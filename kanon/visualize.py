@@ -1,10 +1,10 @@
-"""canon/visualize.py — Generate a self-contained interactive HTML graph visualization."""
+"""kanon/visualize.py — Generate a self-contained interactive HTML graph visualization."""
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
-from canon.graph import KnowledgeGraph
+from kanon.graph import KnowledgeGraph
 
 # ---------------------------------------------------------------------------
 # Color scheme: entity type → (background, text)
@@ -68,7 +68,7 @@ def generate_scoped_html(
     Parameters
     ----------
     graph:
-        A loaded :class:`~canon.graph.KnowledgeGraph` instance.
+        A loaded :class:`~kanon.graph.KnowledgeGraph` instance.
     entity_ids:
         IDs of all entities to include in this view.
     highlight_ids:
@@ -156,7 +156,7 @@ def generate_graph_html(graph: KnowledgeGraph, output_path: Path) -> Path:
     Parameters
     ----------
     graph:
-        A loaded :class:`~canon.graph.KnowledgeGraph` instance.
+        A loaded :class:`~kanon.graph.KnowledgeGraph` instance.
     output_path:
         Destination for the ``.html`` file.  Parent directories are created
         automatically.
@@ -258,7 +258,7 @@ def _build_scoped_html(nodes_json: str, edges_json: str, title: str = "", subtit
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{title} — Canon</title>
+<title>{title} — Kanon</title>
 <style>
   *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
   body {{
@@ -686,7 +686,7 @@ def _build_html(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Canon Knowledge Graph</title>
+<title>Kanon Knowledge Graph</title>
 <style>
   *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
 
@@ -969,7 +969,7 @@ def _build_html(
 
 <div id="main">
   <div id="left-sidebar">
-    <h2>Canon Knowledge Graph</h2>
+    <h2>Kanon Knowledge Graph</h2>
     <p>This graph contains <strong style="color:#fff;">{total_entities} entities</strong> representing training knowledge for the <strong style="color:#fff;">Claude/AI</strong> domain.</p>
     <p style="font-size:12px;">It covers {concept_names}, backed by {evidence_count} evidence source{"s" if evidence_count != 1 else ""} from Anthropic documentation. {fact_count} versioned facts track specific claims that can become stale. {asset_count} training asset{"s" if asset_count != 1 else ""} {"have" if asset_count != 1 else "has"} been generated from these knowledge objects.</p>
 

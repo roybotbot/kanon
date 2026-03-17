@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import Any
 import yaml
 
-from canon.graph import KnowledgeGraph
-from canon.models.entities import Concept, Capability, Task, Audience, Fact
+from kanon.graph import KnowledgeGraph
+from kanon.models.entities import Concept, Capability, Task, Audience, Fact
 
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 

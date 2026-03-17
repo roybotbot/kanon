@@ -1,8 +1,8 @@
 """Tests for the confidence scoring engine."""
 import pytest
 
-from canon.confidence import calculate_confidence, needs_review
-from canon.models.entities import ConfidenceScore
+from kanon.confidence import calculate_confidence, needs_review
+from kanon.models.entities import ConfidenceScore
 
 
 class TestEvidenceScore:

@@ -4,7 +4,7 @@ from datetime import date, datetime
 import pytest
 from pydantic import ValidationError
 
-from canon.models.entities import (
+from kanon.models.entities import (
     Asset,
     Audience,
     Capability,

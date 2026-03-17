@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
-from canon.graph import KnowledgeGraph
-from canon.models.entities import Asset, Fact
+from kanon.graph import KnowledgeGraph
+from kanon.models.entities import Asset, Fact
 
 
 @dataclass

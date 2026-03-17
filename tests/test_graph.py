@@ -1,7 +1,7 @@
 # tests/test_graph.py
 import pytest
 from pathlib import Path
-from canon.graph import KnowledgeGraph
+from kanon.graph import KnowledgeGraph
 
 
 @pytest.fixture

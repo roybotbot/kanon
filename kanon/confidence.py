@@ -1,7 +1,7 @@
 """Confidence scoring engine for Canon assets."""
 from __future__ import annotations
 
-from canon.models.entities import ConfidenceScore
+from kanon.models.entities import ConfidenceScore
 
 TRANSFORMATION_SCORES: dict[str, float] = {
     "dry_run": 1.0,
