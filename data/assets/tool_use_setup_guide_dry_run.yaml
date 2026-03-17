@@ -7,78 +7,36 @@ teaches:
 - tool_use
 targets:
 - enterprise_developer
-evidence_links: []
+evidence_links:
+- anthropic_tool_use_docs
 generation_method: dry_run
-generated_at: '2026-03-17T08:26:23.616907+00:00'
-last_updated: '2026-03-17T08:26:23.616907+00:00'
+generated_at: '2026-03-17T09:32:37.069255+00:00'
+last_updated: '2026-03-17T09:32:37.069255+00:00'
 confidence:
   evidence: 1.0
   freshness: 1.0
   structural: 1.0
   transformation: 1.0
   overall: 1.0
-content: '# Tool Use - Setup Guide
-
-
-  ## Overview
-
-
-  **Tool Use:** Enabling the model to call external functions and APIs
-
-
-  ## Prerequisites
-
-
-  - api_authentication
-
-
-  - system_prompt
-
-
-  ## Procedure
-
-
-  ### Configure Tool Definitions
-
-  To configure tool use, add a tools array to your API request.
-
-  Each tool needs a name, description, and input_schema.
-
-  Claude will return a tool_use content block when it wants to call a tool.
-
-  Your code must execute the tool and return results in a tool_result message.
-
-
-
-  ### Set System Instructions
-
-  Add a system parameter to your API request with instructions for Claude.
-
-  The system prompt should clearly state Claude''s role, any constraints,
-
-  preferred output format, and tone. Keep system prompts focused and specific.
-
-
-
-  ## Verification
-
-
-  Tool use allows Claude to call external functions you define.
-
-  You provide tool definitions with names, descriptions, and input schemas.
-
-  Claude decides when to use a tool and returns a tool_use response block.
-
-
-
-  ## Troubleshooting
-
-
-  Tool use allows Claude to call external functions you define.
-
-  You provide tool definitions with names, descriptions, and input schemas.
-
-  Claude decides when to use a tool and returns a tool_use response block.
-
-
-  '
+content: "# Tool Use - Setup Guide\n\n## Overview\n\n**Tool Use:** Enabling the model\
+  \ to call external functions and APIs\n\n## Prerequisites\n\n- api_authentication\n\
+  \n- system_prompt\n\n## Procedure\n\n### Configure Tool Definitions\nTo configure\
+  \ tool use, add a tools array to your API request.\nEach tool needs a name, description,\
+  \ and input_schema.\nClaude will return a tool_use content block when it wants to\
+  \ call a tool.\nYour code must execute the tool and return results in a tool_result\
+  \ message.\n\n\n### Set System Instructions\nAdd a system parameter to your API\
+  \ request with instructions for Claude.\nThe system prompt should clearly state\
+  \ Claude's role, any constraints,\npreferred output format, and tone. Keep system\
+  \ prompts focused and specific.\n\n\n## Verification\n\nVerify the following hold\
+  \ true:\n\n- **Max tools per request**: 128\n\n\nConfirm these tasks complete successfully:\n\
+  \n- [ ] Configure Tool Definitions: Define function schemas that Claude can invoke\
+  \ during a conversation\n\n- [ ] Set System Instructions: Configure a system prompt\
+  \ to control Claude's behavior in a conversation\n\n## Troubleshooting\n\n### Configure\
+  \ Tool Definitions\n\nIf configure tool definitions fails, check each step:\n\n\
+  \  1. Verify: Define the tool name and description\n\n  2. Verify: Specify the input\
+  \ schema using JSON Schema\n\n  3. Verify: Register the tool in the API request\
+  \ tools array\n\n  4. Verify: Handle the tool_use response block\n\n### Set System\
+  \ Instructions\n\nIf set system instructions fails, check each step:\n\n  1. Verify:\
+  \ Write a system prompt defining Claude's role and constraints\n\n  2. Verify: Include\
+  \ the system prompt in the API request\n\n  3. Verify: Test with sample conversations\
+  \ to verify behavior\n"

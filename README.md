@@ -45,6 +45,22 @@ The current implementation is a minimal but complete version of the system, focu
 
 No database, no CMS, no ingestion, no frontend. The knowledge graph ships pre-populated with Claude/AI training domain content. Clone the repo, run the CLI, and see the system work.
 
+## Validation
+
+The PoC is validated against three stages with automated tests and documented findings. See [VALIDATION.md](VALIDATION.md) for full results.
+
+| Stage | Tests | Status |
+|-------|-------|--------|
+| Generation — produce training materials from the knowledge graph | 7 pass | ✅ |
+| Review — trace claims to source entities, score confidence | 6 pass | ✅ |
+| Drift — detect evidence changes, trace impact, regenerate | 7 pass | ✅ |
+
+A second domain (food/recipe ontology) validates that the system generalizes beyond the Claude/AI training content. Run the tests:
+
+```bash
+pytest tests/test_validation.py -v
+```
+
 ## Motivation
 
 Knowledge systems and training have been recurring parts of my career. Over time I built personal runbooks and methods I rely on regularly, but they were not part of a explicit coherent system. Kanon is my attempt to unify those ideas into one structured knowledge system. With the emergence of agentic AI and the technical skills I've developed more recently, I now have the tools to build the kind of system I previously only approximated informally. I hope others find it useful as well.
