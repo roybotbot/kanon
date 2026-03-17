@@ -55,6 +55,101 @@ def _entity_fields(entity) -> dict:
     return data
 
 
+def generate_scoped_html(
+    graph: KnowledgeGraph,
+    entity_ids: list[str],
+    highlight_ids: list[str],
+    title: str,
+    subtitle: str,
+    output_path: Path,
+) -> Path:
+    """Generate a scoped interactive HTML visualization for a subset of entities.
+
+    Parameters
+    ----------
+    graph:
+        A loaded :class:`~canon.graph.KnowledgeGraph` instance.
+    entity_ids:
+        IDs of all entities to include in this view.
+    highlight_ids:
+        Subset of entity_ids to visually highlight (glow effect).
+    title:
+        Page/operation title, e.g. ``"Generate Result"`` or ``"Drift Report"``.
+    subtitle:
+        Short description shown under the title.
+    output_path:
+        Destination for the ``.html`` file.
+
+    Returns
+    -------
+    Path
+        The resolved path to the written file.
+    """
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    entity_id_set = set(entity_ids)
+    highlight_set = set(highlight_ids)
+
+    # ------------------------------------------------------------------ #
+    # Build node list (only scoped entities)
+    # ------------------------------------------------------------------ #
+    nodes: list[dict] = []
+    node_index: dict[str, int] = {}
+
+    for idx, (entity_id, entity) in enumerate(graph._entities.items()):
+        if entity_id not in entity_id_set:
+            continue
+        type_name = type(entity).__name__
+        bg, fg = _TYPE_COLORS.get(type_name, _DEFAULT_COLORS)
+        label = getattr(entity, "name", entity_id)
+        layer = _TYPE_LAYER.get(type_name, _DEFAULT_LAYER)
+        highlighted = entity_id in highlight_set
+
+        nodes.append({
+            "id": entity_id,
+            "label": label,
+            "type": type_name,
+            "layer": layer,
+            "bg": bg,
+            "fg": fg,
+            "highlighted": highlighted,
+            "fields": _entity_fields(entity),
+        })
+        node_index[entity_id] = len(nodes) - 1
+
+    # ------------------------------------------------------------------ #
+    # Build edge list (only edges where both endpoints are scoped)
+    # ------------------------------------------------------------------ #
+    edges: list[dict] = []
+    seen_edges: set[tuple[str, str, str]] = set()
+
+    for source_id, edge_list in graph._forward.items():
+        if source_id not in entity_id_set:
+            continue
+        for edge in edge_list:
+            if edge.target_id not in entity_id_set:
+                continue
+            key = (edge.source_id, edge.relation, edge.target_id)
+            if key in seen_edges:
+                continue
+            if edge.source_id not in node_index or edge.target_id not in node_index:
+                continue
+            seen_edges.add(key)
+            edges.append({
+                "source": node_index[edge.source_id],
+                "target": node_index[edge.target_id],
+                "relation": edge.relation,
+            })
+
+    nodes_json = json.dumps(nodes, default=str)
+    edges_json = json.dumps(edges)
+
+    html = _build_scoped_html(nodes_json, edges_json, title=title, subtitle=subtitle)
+    output_path.write_text(html, encoding="utf-8")
+    return output_path.resolve()
+
+
 def generate_graph_html(graph: KnowledgeGraph, output_path: Path) -> Path:
     """Generate an interactive HTML visualization of the knowledge graph.
 
@@ -156,6 +251,426 @@ def generate_graph_html(graph: KnowledgeGraph, output_path: Path) -> Path:
 # ---------------------------------------------------------------------------
 # HTML builder
 # ---------------------------------------------------------------------------
+
+def _build_scoped_html(nodes_json: str, edges_json: str, title: str = "", subtitle: str = "") -> str:
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title} — Canon</title>
+<style>
+  *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{
+    background: #0a0a0a; color: #d1d5db;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+  }}
+  #title-bar {{
+    padding: 14px 20px; background: #111; border-bottom: 1px solid #1e1e1e;
+    flex-shrink: 0;
+  }}
+  #title-bar h1 {{ font-size: 16px; color: #fff; margin-bottom: 2px; }}
+  #title-bar p {{ font-size: 12px; color: #9ca3af; }}
+  #main {{ display: flex; flex: 1; overflow: hidden; }}
+  #canvas-wrap {{ flex: 1; position: relative; overflow: hidden; }}
+  canvas {{ display: block; cursor: default; }}
+  #overlay-toolbar {{
+    position: absolute; top: 10px; left: 10px;
+    display: flex; gap: 6px; z-index: 10;
+  }}
+  #overlay-toolbar button {{
+    background: #181818; border: 1px solid #2a2a2a; color: #d1d5db;
+    border-radius: 6px; padding: 5px 11px; cursor: pointer; font-size: 11px;
+  }}
+  #overlay-toolbar button:hover {{ background: #252525; }}
+  #hint {{
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.65); border: 1px solid #222; border-radius: 6px;
+    padding: 5px 14px; font-size: 11px; color: #6b7280;
+    pointer-events: none; white-space: nowrap;
+  }}
+  #panel {{
+    width: 300px; min-width: 260px; background: #111;
+    border-left: 1px solid #1e1e1e; display: flex; flex-direction: column;
+    overflow: hidden; transition: width 0.2s, min-width 0.2s; flex-shrink: 0;
+  }}
+  #panel.hidden {{ width: 0; min-width: 0; border-left: none; }}
+  #panel-inner {{
+    padding: 14px; overflow-y: auto; flex: 1; font-size: 12px; line-height: 1.6;
+  }}
+  #panel h2 {{ font-size: 14px; font-weight: 700; margin-bottom: 3px; word-break: break-word; }}
+  #panel .type-badge {{
+    display: inline-block; font-size: 10px; padding: 2px 8px;
+    border-radius: 999px; margin-bottom: 10px; font-weight: 700;
+  }}
+  #panel .section-title {{
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: #6b7280; margin: 12px 0 5px; font-weight: 600;
+  }}
+  #panel .field-row {{ display: flex; gap: 6px; margin-bottom: 3px; flex-wrap: wrap; }}
+  #panel .field-key {{ color: #6b7280; flex-shrink: 0; min-width: 72px; }}
+  #panel .field-val {{ color: #e5e7eb; word-break: break-word; }}
+  #panel .conn-link {{
+    display: block; padding: 3px 6px; margin-bottom: 3px; border-radius: 4px;
+    cursor: pointer; background: #1a1a1a; border: 1px solid #2a2a2a;
+    transition: background 0.15s; word-break: break-word; font-size: 11px;
+  }}
+  #panel .conn-link:hover {{ background: #222; }}
+  #panel-header {{
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 10px 0; flex-shrink: 0;
+  }}
+  #close-panel {{
+    background: none; border: none; color: #6b7280; cursor: pointer;
+    font-size: 16px; padding: 4px 6px; line-height: 1; border-radius: 4px;
+  }}
+  #close-panel:hover {{ color: #d1d5db; background: #1e1e1e; }}
+</style>
+</head>
+<body>
+
+<div id="title-bar">
+  <h1>{title}</h1>
+  <p>{subtitle}</p>
+</div>
+
+<div id="main">
+  <div id="canvas-wrap">
+    <canvas id="graph-canvas"></canvas>
+    <div id="overlay-toolbar">
+      <button id="btn-fit">Fit View</button>
+    </div>
+    <div id="hint">Click node to see details · Scroll to zoom · Drag to pan</div>
+  </div>
+  <div id="panel" class="hidden">
+    <div id="panel-header">
+      <span style="font-size:11px;color:#6b7280">Details</span>
+      <button id="close-panel" title="Close">&#x2715;</button>
+    </div>
+    <div id="panel-inner"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const NODES = {nodes_json};
+const EDGES = {edges_json};
+
+const NODE_H    = 40;
+const FONT_SIZE = 12;
+const EDGE_FONT = 9;
+const LAYER_GAP = 120;
+const NODE_PAD  = 30;
+
+const devicePixelRatio = window.devicePixelRatio || 1;
+const canvas = document.getElementById('graph-canvas');
+const ctx    = canvas.getContext('2d');
+const wrap   = document.getElementById('canvas-wrap');
+const panel  = document.getElementById('panel');
+const panelInner = document.getElementById('panel-inner');
+
+let W, H;
+let camX = 0, camY = 0, camZ = 1;
+let px = [], py = [], pw = [];
+let selectedIdx = -1;
+let dragging = false, dragNode = -1, dragStartX = 0, dragStartY = 0;
+let panStartX = 0, panStartY = 0, panStartCamX = 0, panStartCamY = 0;
+let dragOffsetX = 0, dragOffsetY = 0, nodeDragStarted = false;
+
+// ============================================================
+// LAYOUT
+// ============================================================
+function measureNodeWidth(label) {{
+  ctx.font = `${{FONT_SIZE}}px system-ui`;
+  return Math.max(120, Math.min(250, ctx.measureText(label).width + 36));
+}}
+
+function assignPositions() {{
+  const layers = {{}};
+  NODES.forEach((n, i) => {{
+    const l = n.layer || 8;
+    if (!layers[l]) layers[l] = [];
+    layers[l].push(i);
+  }});
+  pw = NODES.map(n => measureNodeWidth(n.label));
+  const sortedLayers = Object.keys(layers).map(Number).sort((a, b) => a - b);
+  sortedLayers.forEach((layerNum, li) => {{
+    const idxs = layers[layerNum];
+    const totalW = idxs.reduce((s, i) => s + pw[i], 0) + (idxs.length - 1) * NODE_PAD;
+    let cx = -totalW / 2;
+    idxs.forEach(i => {{
+      px[i] = cx + pw[i] / 2;
+      py[i] = li * LAYER_GAP;
+      cx += pw[i] + NODE_PAD;
+    }});
+  }});
+}}
+
+function fitView() {{
+  if (!NODES.length) return;
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  NODES.forEach((_, i) => {{
+    const hw = pw[i] / 2;
+    minX = Math.min(minX, px[i] - hw); maxX = Math.max(maxX, px[i] + hw);
+    minY = Math.min(minY, py[i] - NODE_H / 2); maxY = Math.max(maxY, py[i] + NODE_H / 2);
+  }});
+  const gw = maxX - minX + 80, gh = maxY - minY + 80;
+  camZ = Math.min(W / gw, H / gh, 2.0);
+  camX = (minX + maxX) / 2;
+  camY = (minY + maxY) / 2;
+}}
+
+function screenToWorld(sx, sy) {{
+  return [(sx - W / 2) / camZ + camX, (sy - H / 2) / camZ + camY];
+}}
+
+function nodeAt(sx, sy) {{
+  const [wx, wy] = screenToWorld(sx, sy);
+  for (let i = NODES.length - 1; i >= 0; i--) {{
+    const hw = pw[i] / 2, hh = NODE_H / 2;
+    if (wx >= px[i] - hw && wx <= px[i] + hw && wy >= py[i] - hh && wy <= py[i] + hh) return i;
+  }}
+  return -1;
+}}
+
+// ============================================================
+// SHAPES
+// ============================================================
+function drawNodeShape(node, x, y, w, h, cx, cy) {{
+  const t = node.type;
+  ctx.beginPath();
+  if (t === 'Fact') {{
+    const mx = cx, my = cy, hw = w/2, hh = h/2, flat = hw * 0.7;
+    ctx.moveTo(mx - flat, my - hh); ctx.lineTo(mx + flat, my - hh);
+    ctx.lineTo(mx + hw, my); ctx.lineTo(mx + flat, my + hh);
+    ctx.lineTo(mx - flat, my + hh); ctx.lineTo(mx - hw, my); ctx.closePath();
+  }} else if (t === 'Audience') {{
+    ctx.ellipse(cx, cy, w/2, h/2, 0, 0, Math.PI * 2);
+  }} else if (t === 'Constraint') {{
+    const hw = w/2, hh = h/2, c = Math.min(hw, hh) * 0.35;
+    ctx.moveTo(cx - hw + c, cy - hh); ctx.lineTo(cx + hw - c, cy - hh);
+    ctx.lineTo(cx + hw, cy - hh + c); ctx.lineTo(cx + hw, cy + hh - c);
+    ctx.lineTo(cx + hw - c, cy + hh); ctx.lineTo(cx - hw + c, cy + hh);
+    ctx.lineTo(cx - hw, cy + hh - c); ctx.lineTo(cx - hw, cy - hh + c); ctx.closePath();
+  }} else {{
+    const r = t === 'Capability' ? 12 : t === 'Concept' || t === 'LearningObjective' ? 8 : 4;
+    ctx.roundRect(x, y, w, h, r);
+  }}
+}}
+
+function drawNodeExtras(node, x, y, w, h, cx, cy, fg) {{
+  const t = node.type;
+  if (t === 'Evidence') {{
+    const fs = 10;
+    ctx.beginPath(); ctx.moveTo(x + w - fs, y); ctx.lineTo(x + w - fs, y + fs); ctx.lineTo(x + w, y + fs);
+    ctx.strokeStyle = fg + '66'; ctx.lineWidth = 1; ctx.stroke();
+  }} else if (t === 'Asset') {{
+    const m = 4;
+    ctx.beginPath(); ctx.roundRect(x + m, y + m, w - m*2, h - m*2, 3);
+    ctx.strokeStyle = fg + '44'; ctx.lineWidth = 1; ctx.stroke();
+  }} else if (t === 'LearningObjective') {{
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.roundRect(x - 1, y - 1, w + 2, h + 2, 9);
+    ctx.strokeStyle = fg + '55'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.setLineDash([]);
+  }}
+}}
+
+// ============================================================
+// DRAWING
+// ============================================================
+function drawArrow(x1, y1, x2, y2, color, lineWidth) {{
+  ctx.strokeStyle = color; ctx.lineWidth = lineWidth;
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  const aLen = 9;
+  ctx.fillStyle = color; ctx.beginPath(); ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - Math.cos(angle - 0.38) * aLen, y2 - Math.sin(angle - 0.38) * aLen);
+  ctx.lineTo(x2 - Math.cos(angle + 0.38) * aLen, y2 - Math.sin(angle + 0.38) * aLen);
+  ctx.closePath(); ctx.fill();
+}}
+
+function edgeAnchor(ni, tx, ty) {{
+  const cx = px[ni], cy = py[ni], hw = pw[ni]/2 + 3, hh = NODE_H/2 + 3;
+  const dx = tx - cx, dy = ty - cy, dist = Math.sqrt(dx*dx + dy*dy);
+  if (dist < 1) return [cx, cy];
+  const sx = dx/dist, sy = dy/dist;
+  const scaleX = Math.abs(sx) > 0.001 ? hw / Math.abs(sx) : Infinity;
+  const scaleY = Math.abs(sy) > 0.001 ? hh / Math.abs(sy) : Infinity;
+  const s = Math.min(scaleX, scaleY, dist);
+  return [cx + sx * s, cy + sy * s];
+}}
+
+function draw() {{
+  W = wrap.clientWidth || window.innerWidth;
+  H = wrap.clientHeight || window.innerHeight;
+  canvas.width = W * devicePixelRatio; canvas.height = H * devicePixelRatio;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  if (!NODES.length) {{ ctx.fillStyle='#6b7280'; ctx.textAlign='center'; ctx.fillText('No entities',W/2,H/2); return; }}
+
+  ctx.save();
+  ctx.translate(W/2 - camX*camZ, H/2 - camY*camZ);
+  ctx.scale(camZ, camZ);
+
+  // Edges
+  for (let ei = 0; ei < EDGES.length; ei++) {{
+    const e = EDGES[ei];
+    ctx.globalAlpha = 0.45;
+    const [x1,y1] = edgeAnchor(e.source, px[e.target], py[e.target]);
+    const [x2,y2] = edgeAnchor(e.target, px[e.source], py[e.source]);
+    drawArrow(x1, y1, x2, y2, '#475569', 1.2);
+    if (camZ > 0.45) {{
+      const mx = (x1+x2)/2, my = (y1+y2)/2 - 5;
+      ctx.font = `${{EDGE_FONT}}px system-ui`; ctx.textAlign = 'center';
+      ctx.fillStyle = '#64748b'; ctx.fillText(e.relation, mx, my);
+    }}
+  }}
+
+  // Nodes
+  for (let i = 0; i < NODES.length; i++) {{
+    const node = NODES[i], w = pw[i], h = NODE_H;
+    const cx = px[i], cy = py[i], x = cx-w/2, y = cy-h/2;
+    const isSel = i === selectedIdx;
+    ctx.globalAlpha = 1.0;
+
+    if (node.highlighted || isSel) {{
+      ctx.shadowColor = node.fg; ctx.shadowBlur = isSel ? 14 : 8;
+    }} else {{ ctx.shadowBlur = 0; }}
+
+    drawNodeShape(node, x, y, w, h, cx, cy);
+    ctx.fillStyle = node.bg; ctx.fill();
+    ctx.strokeStyle = (node.highlighted || isSel) ? node.fg : node.fg + '66';
+    ctx.lineWidth = (node.highlighted || isSel) ? 2 : 1;
+    ctx.stroke(); ctx.shadowBlur = 0;
+    drawNodeExtras(node, x, y, w, h, cx, cy, node.fg);
+
+    ctx.fillStyle = node.fg; ctx.font = `${{FONT_SIZE}}px system-ui`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    let label = node.label; const maxW = w - 18;
+    if (ctx.measureText(label).width > maxW) {{
+      while (label.length > 1 && ctx.measureText(label+'\\u2026').width > maxW) label = label.slice(0,-1);
+      label += '\\u2026';
+    }}
+    ctx.fillText(label, cx, cy); ctx.textBaseline = 'alphabetic';
+  }}
+  ctx.restore(); ctx.globalAlpha = 1.0;
+}}
+
+// ============================================================
+// DETAIL PANEL
+// ============================================================
+function escHtml(s) {{ if (typeof s !== 'string') s = String(s); return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }}
+function formatValue(v) {{ if (Array.isArray(v)) return v.join(', '); if (typeof v === 'object' && v !== null) return JSON.stringify(v); return String(v); }}
+
+function showPanel(idx) {{
+  const node = NODES[idx];
+  const fwd = EDGES.filter(e => e.source === idx);
+  const rev = EDGES.filter(e => e.target === idx);
+  let html = `<span class="type-badge" style="background:${{escHtml(node.bg)}};color:${{escHtml(node.fg)}}">${{escHtml(node.type)}}</span>`;
+  html += `<h2>${{escHtml(node.label)}}</h2>`;
+  html += `<div style="font-size:11px;color:#6b7280;margin-bottom:10px">${{escHtml(node.id)}}</div>`;
+  html += `<div class="section-title">Fields</div>`;
+  for (const [k,v] of Object.entries(node.fields)) {{
+    if (['id','name'].includes(k)) continue;
+    html += `<div class="field-row"><span class="field-key">${{escHtml(k)}}</span><span class="field-val">${{escHtml(formatValue(v))}}</span></div>`;
+  }}
+  if (fwd.length) {{
+    html += `<div class="section-title">Connects to (${{fwd.length}})</div>`;
+    for (const e of fwd) {{
+      const t = NODES[e.target];
+      html += `<div class="conn-link" onclick="jumpTo(${{e.target}})" style="color:${{escHtml(t.fg)}}"><span style="color:#6b7280;margin-right:4px;">\\u2192</span><span style="font-size:10px;color:#6b7280;margin-right:4px;">${{escHtml(e.relation)}}</span>${{escHtml(t.label)}}</div>`;
+    }}
+  }}
+  if (rev.length) {{
+    html += `<div class="section-title">Referenced by (${{rev.length}})</div>`;
+    for (const e of rev) {{
+      const s = NODES[e.source];
+      html += `<div class="conn-link" onclick="jumpTo(${{e.source}})" style="color:${{escHtml(s.fg)}}"><span style="color:#6b7280;margin-right:4px;">\\u2190</span><span style="font-size:10px;color:#6b7280;margin-right:4px;">${{escHtml(e.relation)}}</span>${{escHtml(s.label)}}</div>`;
+    }}
+  }}
+  panelInner.innerHTML = html;
+  panel.classList.remove('hidden');
+}}
+
+function jumpTo(idx) {{
+  selectedIdx = idx;
+  camX = px[idx]; camY = py[idx];
+  showPanel(idx); draw();
+}}
+
+// ============================================================
+// EVENTS
+// ============================================================
+canvas.addEventListener('mousedown', e => {{
+  const idx = nodeAt(e.offsetX, e.offsetY);
+  if (idx !== -1) {{
+    dragging = true; dragNode = idx; dragStartX = e.offsetX; dragStartY = e.offsetY;
+    nodeDragStarted = false;
+    const [wx,wy] = screenToWorld(e.offsetX, e.offsetY);
+    dragOffsetX = px[idx] - wx; dragOffsetY = py[idx] - wy;
+  }} else {{
+    dragging = true; dragNode = -1; panStartX = e.offsetX; panStartY = e.offsetY;
+    panStartCamX = camX; panStartCamY = camY; canvas.style.cursor = 'grabbing';
+  }}
+}});
+
+canvas.addEventListener('mousemove', e => {{
+  if (!dragging) {{ canvas.style.cursor = nodeAt(e.offsetX,e.offsetY) !== -1 ? 'pointer' : 'default'; return; }}
+  if (dragNode !== -1) {{
+    const moved = Math.abs(e.offsetX-dragStartX) + Math.abs(e.offsetY-dragStartY);
+    if (!nodeDragStarted && moved < 5) return;
+    nodeDragStarted = true; canvas.style.cursor = 'grabbing';
+    const [wx,wy] = screenToWorld(e.offsetX, e.offsetY);
+    px[dragNode] = wx + dragOffsetX; py[dragNode] = wy + dragOffsetY; draw();
+  }} else {{
+    camX = panStartCamX - (e.offsetX-panStartX)/camZ;
+    camY = panStartCamY - (e.offsetY-panStartY)/camZ; draw();
+  }}
+}});
+
+canvas.addEventListener('mouseup', e => {{
+  if (dragging && dragNode === -1) {{
+    if (Math.abs(e.offsetX-panStartX)+Math.abs(e.offsetY-panStartY) < 5) {{
+      selectedIdx = -1; panel.classList.add('hidden'); draw();
+    }}
+  }} else if (dragging && dragNode !== -1 && !nodeDragStarted) {{
+    selectedIdx = dragNode; showPanel(dragNode); draw();
+  }}
+  dragging = false; dragNode = -1; nodeDragStarted = false; canvas.style.cursor = 'default';
+}});
+
+canvas.addEventListener('mouseleave', () => {{ dragging=false; dragNode=-1; canvas.style.cursor='default'; }});
+
+canvas.addEventListener('wheel', e => {{
+  e.preventDefault();
+  const factor = e.deltaY < 0 ? 1.1 : 0.91;
+  const [wx,wy] = screenToWorld(e.offsetX, e.offsetY);
+  camZ *= factor; camX += (wx - camX) * (1 - 1/factor); camY += (wy - camY) * (1 - 1/factor);
+  draw();
+}}, {{passive: false}});
+
+document.getElementById('btn-fit').addEventListener('click', () => {{ fitView(); draw(); }});
+document.getElementById('close-panel').addEventListener('click', () => {{ panel.classList.add('hidden'); selectedIdx=-1; draw(); }});
+
+// ============================================================
+// BOOTSTRAP
+// ============================================================
+W = wrap.clientWidth || window.innerWidth;
+H = wrap.clientHeight || window.innerHeight;
+canvas.width = W * devicePixelRatio; canvas.height = H * devicePixelRatio;
+canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+assignPositions(); fitView(); draw();
+window.addEventListener('resize', () => {{ fitView(); draw(); }});
+</script>
+</body>
+</html>"""
+
 
 def _build_html(
     nodes_json: str,

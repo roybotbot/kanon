@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import webbrowser
 from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
 
 import click
@@ -248,6 +249,27 @@ def generate_cmd(template_type: str, concepts: str, audience: str, dry_run: bool
         result=result["name"],
     )
 
+    # Scoped visualization
+    from canon.visualize import generate_scoped_html
+
+    involved = set(concept_ids)
+    involved.add(audience)
+    involved.update(result.get("evidence_links", []))
+    for e in g.subgraph(concept_ids):
+        involved.add(e.id)
+
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
+    scoped_path = Path(__file__).parent.parent / "docs" / f"generate-{timestamp}.html"
+    html_path = generate_scoped_html(
+        graph=g,
+        entity_ids=list(involved),
+        highlight_ids=concept_ids,
+        title="Generate Result",
+        subtitle=f"{result['name']} for {audience}",
+        output_path=scoped_path,
+    )
+    webbrowser.open(f"file://{html_path.resolve()}")
+
 
 # ---------------------------------------------------------------------------
 # drift
@@ -302,3 +324,28 @@ def drift_cmd(evidence_id: str, change_description: str) -> None:
         result=f"{len(report.stale_facts)} stale facts, {len(report.affected_assets)} affected assets",
         trace=trace,
     )
+
+    # Scoped visualization
+    from canon.visualize import generate_scoped_html
+
+    involved = set([evidence_id])
+    for f in report.stale_facts:
+        involved.add(f.id)
+        involved.add(f.concept)
+    for a in report.affected_assets:
+        involved.add(a.id)
+        involved.update(a.teaches)
+
+    highlight = [evidence_id] + [f.id for f in report.stale_facts] + [a.id for a in report.affected_assets]
+
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
+    scoped_path = Path(__file__).parent.parent / "docs" / f"drift-{timestamp}.html"
+    html_path = generate_scoped_html(
+        graph=g,
+        entity_ids=list(involved),
+        highlight_ids=highlight,
+        title="Drift Report",
+        subtitle=f"Evidence changed: {evidence_id} — {change_description}",
+        output_path=scoped_path,
+    )
+    webbrowser.open(f"file://{html_path.resolve()}")
