@@ -1,4 +1,4 @@
-id: tool_use_setup_guide
+id: tool_use_setup_guide_dry_run
 name: Tool Use Setup Guide
 asset_type: guide
 delivery_format: setup_guide
@@ -9,8 +9,8 @@ targets:
 - enterprise_developer
 evidence_links: []
 generation_method: dry_run
-generated_at: '2026-03-17T08:23:41.474884+00:00'
-last_updated: '2026-03-17T08:23:41.474884+00:00'
+generated_at: '2026-03-17T08:26:23.616907+00:00'
+last_updated: '2026-03-17T08:26:23.616907+00:00'
 confidence:
   evidence: 1.0
   freshness: 1.0

@@ -288,7 +288,8 @@ def generate_cmd(template_type: str, concepts: str, audience: str, dry_run: bool
         return
 
     # Save asset to file
-    asset_id = "_".join(concept_ids) + f"_{template_type}"
+    method = result["generation_method"]
+    asset_id = "_".join(concept_ids) + f"_{template_type}_{method}"
     asset_path = Path(__file__).parent.parent / "data" / "assets" / f"{asset_id}.yaml"
 
     import yaml
