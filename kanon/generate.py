@@ -42,8 +42,15 @@ def generate_asset_dry_run(
     if not isinstance(audience, Audience):
         raise ValueError(f"Audience '{audience_id}' not found in graph")
 
-    # Resolve subgraph
+    # Resolve subgraph (forward edges from concepts)
     subgraph = graph.subgraph(concept_ids)
+
+    # Also include facts that reference these concepts (reverse relationship)
+    concept_id_set = {c.id for c in concepts}
+    for entity in graph.entities.values():
+        if isinstance(entity, Fact) and entity.concept in concept_id_set:
+            if entity not in subgraph:
+                subgraph.append(entity)
 
     # Build sections
     sections = {}
@@ -67,7 +74,7 @@ def generate_asset_dry_run(
         "lifecycle_state": "draft",
         "teaches": concept_ids,
         "targets": [audience_id],
-        "evidence_links": _collect_evidence(subgraph),
+        "evidence_links": _collect_evidence(subgraph, graph),
         "generation_method": "dry_run",
         "generated_at": now.isoformat(),
         "last_updated": now.isoformat(),
@@ -96,6 +103,60 @@ def _build_section(section_name, concepts, subgraph, audience):
             elif isinstance(entity, Task) and entity.steps:
                 steps = "\n".join(f"{i+1}. {s}" for i, s in enumerate(entity.steps))
                 parts.append(f"### {entity.name}\n{steps}")
+    elif section_name == "learning_objectives":
+        from kanon.models.entities import LearningObjective
+        for entity in subgraph:
+            if isinstance(entity, LearningObjective):
+                parts.append(f"- {entity.description}")
+    elif section_name == "verification":
+        # Gather facts as verifiable claims
+        facts = [e for e in subgraph if isinstance(e, Fact) and e.status == "active"]
+        if facts:
+            parts.append("Verify the following hold true:")
+            for f in facts:
+                line = f"- **{f.claim}**: {f.value}"
+                if f.condition:
+                    line += f" ({f.condition})"
+                parts.append(line)
+        # Add task completion checks
+        tasks = [e for e in subgraph if isinstance(e, Task)]
+        if tasks:
+            parts.append("\nConfirm these tasks complete successfully:")
+            for t in tasks:
+                parts.append(f"- [ ] {t.name}: {t.description}")
+    elif section_name == "troubleshooting":
+        # Derive troubleshooting from tasks and their steps
+        tasks = [e for e in subgraph if isinstance(e, Task)]
+        if tasks:
+            for t in tasks:
+                parts.append(f"### {t.name}")
+                if t.steps:
+                    parts.append(f"If {t.name.lower()} fails, check each step:")
+                    for i, step in enumerate(t.steps, 1):
+                        parts.append(f"  {i}. Verify: {step}")
+                elif t.content_block:
+                    parts.append(t.content_block)
+    elif section_name == "exercises":
+        # Generate exercise prompts from tasks
+        tasks = [e for e in subgraph if isinstance(e, Task)]
+        if tasks:
+            for i, t in enumerate(tasks, 1):
+                parts.append(f"**Exercise {i}: {t.name}**")
+                parts.append(f"Objective: {t.description}")
+                if t.steps:
+                    parts.append("Steps:")
+                    for j, step in enumerate(t.steps, 1):
+                        parts.append(f"  {j}. {step}")
+    elif section_name == "common_questions":
+        # Derive Q&A from facts
+        facts = [e for e in subgraph if isinstance(e, Fact) and e.status == "active"]
+        if facts:
+            for f in facts:
+                parts.append(f"**Q: What is the {f.claim.lower()}?**")
+                answer = f"A: {f.value}"
+                if f.condition:
+                    answer += f" ({f.condition})"
+                parts.append(answer)
     else:
         for c in concepts:
             if c.content_block:
@@ -103,11 +164,28 @@ def _build_section(section_name, concepts, subgraph, audience):
     return "\n\n".join(parts) if parts else f"*{section_name.replace('_', ' ').title()} content to be added.*"
 
 
-def _collect_evidence(subgraph):
+def _collect_evidence(subgraph, graph=None):
+    """Collect evidence IDs from facts in the subgraph.
+
+    The subgraph follows forward edges from concepts, but facts point
+    *to* concepts (via fact.concept), so they aren't in the forward
+    subgraph. When a graph is provided, we also find facts that
+    reference concepts in the subgraph via reverse edges.
+    """
     evidence_ids = set()
+
+    # Collect from facts already in the subgraph
     for entity in subgraph:
         if isinstance(entity, Fact):
             evidence_ids.update(entity.evidence)
+
+    # Also find facts that point to concepts in the subgraph
+    if graph is not None:
+        concept_ids = {e.id for e in subgraph if isinstance(e, Concept)}
+        for entity in graph.entities.values():
+            if isinstance(entity, Fact) and entity.concept in concept_ids:
+                evidence_ids.update(entity.evidence)
+
     return list(evidence_ids)
 
 
@@ -163,7 +241,7 @@ def _build_knowledge_context(
             parts.append("")
 
     # Evidence sources
-    evidence_ids = _collect_evidence(subgraph)
+    evidence_ids = _collect_evidence(subgraph, graph)
     evidence_entities = [graph.get(eid) for eid in evidence_ids]
     evidence_entities = [e for e in evidence_entities if isinstance(e, Evidence)]
     if evidence_entities:
@@ -297,7 +375,7 @@ def generate_asset_llm(
         "lifecycle_state": "draft",
         "teaches": concept_ids,
         "targets": [audience_id],
-        "evidence_links": _collect_evidence(subgraph),
+        "evidence_links": _collect_evidence(subgraph, graph),
         "generation_method": "llm",
         "generated_at": now.isoformat(),
         "last_updated": now.isoformat(),

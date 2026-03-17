@@ -14,7 +14,7 @@ For the full validation plan and criteria, see [docs/raw/poc-validation-plan.md]
 
 | # | Test | Status | Evidence |
 |---|------|--------|----------|
-| 1.1 | Dry-run populates all sections without fallback repetition | ❌ | `test_validation.py::test_dry_run_no_repeated_sections` |
+| 1.1 | Dry-run populates all sections without fallback repetition | ✅ | `test_validation.py::test_dry_run_no_repeated_sections` |
 | 1.1b | All sections have content (no empty sections) | ✅ | `test_validation.py::test_dry_run_all_sections_populated` |
 | 1.2 | LLM output contains only knowledge graph content | ⬜ | Manual review (requires API call) |
 | 1.3 | Same asset generates differently for two audiences | ✅ | `test_validation.py::test_audience_adaptation_dry_run` |
@@ -25,7 +25,7 @@ For the full validation plan and criteria, see [docs/raw/poc-validation-plan.md]
 
 ### Findings
 
-**1.1 FAIL — Dry-run section repetition bug.** `_build_section` has no specific handler for `verification` or `troubleshooting` sections. Both fall through to the generic `else` clause which dumps the concept's `content_block`. Result: identical content in both sections. Needs section-specific handlers or a different fallback strategy.
+**1.1 PASS (fixed).** `_build_section` now has specific handlers for all template sections: `verification` uses facts as checkable claims plus task completion checks, `troubleshooting` derives step-by-step diagnostic guides from tasks, `exercises` generates exercise prompts from tasks, `common_questions` derives Q&A from facts. No two sections produce identical content.
 
 **1.3 PASS (partial).** Audience adaptation at the dry-run level only changes the `targets` metadata — the actual content is identical for both audiences. The dry-run assembler doesn't use audience information to adapt tone or structure. LLM generation does handle this (confirmed by manual testing), but the dry-run path doesn't.
 
@@ -41,8 +41,8 @@ For the full validation plan and criteria, see [docs/raw/poc-validation-plan.md]
 
 | # | Test | Status | Evidence |
 |---|------|--------|----------|
-| 2.1 | Asset lists all contributing source entities | ❌ | `test_validation.py::test_asset_traceability` |
-| 2.1b | Food domain traceability | ❌ | `test_validation.py::test_asset_traceability_food` |
+| 2.1 | Asset lists all contributing source entities | ✅ | `test_validation.py::test_asset_traceability` |
+| 2.1b | Food domain traceability | ✅ | `test_validation.py::test_asset_traceability_food` |
 | 2.2 | Confidence scores change when entities change | ✅ | `test_validation.py::test_confidence_reflects_changes` |
 | 2.3 | Stale facts produce lower confidence than fresh facts | ✅ | `test_validation.py::test_stale_facts_lower_confidence` |
 | 2.3b | Assets below threshold flagged for review | ✅ | `test_validation.py::test_needs_review_threshold` |
@@ -50,7 +50,7 @@ For the full validation plan and criteria, see [docs/raw/poc-validation-plan.md]
 
 ### Findings
 
-**2.1 FAIL — Evidence traceability broken.** `_collect_evidence` walks the forward-edge subgraph from concepts, but facts point *to* concepts (via `fact.concept`), not the other way around. The subgraph traversal only follows forward edges from the starting concept, so it never reaches facts, and therefore never finds their evidence links. The generated asset returns `evidence_links: []`. This is a real bug in the graph traversal — facts should be reachable from concepts via reverse edges.
+**2.1 PASS (fixed).** `_collect_evidence` now also searches for facts that reference concepts in the subgraph via reverse lookup, not just forward-edge traversal. The dry-run generator also injects these facts into the subgraph so section handlers (verification, troubleshooting, common_questions) can use them.
 
 **2.2, 2.3 PASS.** The confidence scoring engine correctly produces lower scores when evidence coverage is partial or evidence is stale. The math works.
 
@@ -110,14 +110,14 @@ pytest tests/test_validation.py -v -k "stage3"
 
 | Stage | Pass | Fail | Not Run | Notes |
 |-------|------|------|---------|-------|
-| Stage 1: Generation | 6 | 1 | 1 | Dry-run section repetition bug; LLM test requires API |
-| Stage 2: Review | 4 | 2 | 0 | Evidence traceability broken — subgraph traversal doesn't reach facts |
+| Stage 1: Generation | 7 | 0 | 1 | LLM content-only test requires API call |
+| Stage 2: Review | 6 | 0 | 0 | All pass |
 | Stage 3: Drift | 7 | 0 | 0 | All pass across both domains |
 
-### Bugs found
+### Bugs found and fixed
 
-1. **`_build_section` fallback** — verification and troubleshooting sections repeat the concept content_block (Stage 1.1)
-2. **`_collect_evidence` traversal** — subgraph follows forward edges only, never reaches facts that point back to concepts (Stage 2.1)
+1. **`_build_section` fallback** (Stage 1.1) — verification and troubleshooting sections repeated the concept content_block. Fixed by adding section-specific handlers for verification, troubleshooting, exercises, common_questions, and learning_objectives.
+2. **`_collect_evidence` traversal** (Stage 2.1) — subgraph followed forward edges only, never reaching facts that point back to concepts. Fixed by adding reverse lookup for facts referencing concepts in the subgraph.
 
 ---
 

@@ -600,24 +600,20 @@ class TestStage3Drift:
         """
         g, tmp_path = food_graph
 
-        # Generate before update
+        # Generate before update — facts appear in verification section
         result_before = generate_asset_dry_run(
             graph=g,
             template_name="setup_guide",
             concept_ids=["pasta_cooking"],
             audience_id="home_cook",
         )
-        assert "1 gallon" in result_before["content"]
+        assert "1 gallon per pound" in result_before["content"]
 
-        # Update the concept content to reflect a changed fact
-        concept_path = tmp_path / "concepts" / "pasta_cooking.yaml"
-        updated_concept = yaml.safe_load(concept_path.read_text())
-        updated_concept["content_block"] = (
-            "Cook pasta in a large pot with 4 quarts of water per pound.\n"
-            "Salt the water generously before adding pasta.\n"
-            "Test for doneness 2 minutes before package time."
-        )
-        concept_path.write_text(yaml.dump(updated_concept, default_flow_style=False))
+        # Update the fact to reflect changed evidence
+        fact_path = tmp_path / "facts" / "pasta_water_ratio.yaml"
+        updated_fact = yaml.safe_load(fact_path.read_text())
+        updated_fact["value"] = "4 quarts per pound of pasta"
+        fact_path.write_text(yaml.dump(updated_fact, default_flow_style=False))
 
         # Reload graph
         g_updated = KnowledgeGraph(data_dir=tmp_path)
@@ -630,5 +626,5 @@ class TestStage3Drift:
             audience_id="home_cook",
         )
 
-        assert "4 quarts" in result_after["content"]
-        assert "1 gallon" not in result_after["content"]
+        assert "4 quarts per pound" in result_after["content"]
+        assert "1 gallon per pound" not in result_after["content"]
