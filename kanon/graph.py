@@ -2,7 +2,7 @@
 """KnowledgeGraph: loads all entity types and builds forward/reverse indexes."""
 from __future__ import annotations
 
-from collections import defaultdict
+from collections import defaultdict, deque
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -123,29 +123,38 @@ class KnowledgeGraph:
         """Return an entity by ID, or None if not found."""
         return self._entities.get(entity_id)
 
-    def dependencies(self, entity_id: str) -> list[BaseModel]:
-        """Return entities that this entity points to (forward edges)."""
-        result = []
+    def _collect_neighbors(
+        self,
+        index: dict[str, list[Edge]],
+        entity_id: str,
+        id_attr: str,
+    ) -> list[BaseModel]:
+        """Collect unique neighbor entities from an edge index.
+
+        Args:
+            index: Either ``_forward`` or ``_reverse`` edge index.
+            entity_id: The starting entity ID to look up.
+            id_attr: Edge attribute to read the neighbor ID from
+                     (``"target_id"`` for forward, ``"source_id"`` for reverse).
+        """
+        result: list[BaseModel] = []
         seen: set[str] = set()
-        for edge in self._forward.get(entity_id, []):
-            if edge.target_id not in seen:
-                entity = self._entities.get(edge.target_id)
+        for edge in index.get(entity_id, []):
+            neighbor_id = getattr(edge, id_attr)
+            if neighbor_id not in seen:
+                entity = self._entities.get(neighbor_id)
                 if entity is not None:
                     result.append(entity)
-                    seen.add(edge.target_id)
+                    seen.add(neighbor_id)
         return result
+
+    def dependencies(self, entity_id: str) -> list[BaseModel]:
+        """Return entities that this entity points to (forward edges)."""
+        return self._collect_neighbors(self._forward, entity_id, "target_id")
 
     def dependents(self, entity_id: str) -> list[BaseModel]:
         """Return entities that point to this entity (reverse edges)."""
-        result = []
-        seen: set[str] = set()
-        for edge in self._reverse.get(entity_id, []):
-            if edge.source_id not in seen:
-                entity = self._entities.get(edge.source_id)
-                if entity is not None:
-                    result.append(entity)
-                    seen.add(edge.source_id)
-        return result
+        return self._collect_neighbors(self._reverse, entity_id, "source_id")
 
     def impact_of(self, entity_id: str) -> list[BaseModel]:
         """BFS over both forward AND reverse edges from entity_id.
@@ -153,11 +162,11 @@ class KnowledgeGraph:
         Returns all reachable entities (excluding the starting entity itself).
         """
         visited: set[str] = {entity_id}
-        queue: list[str] = [entity_id]
+        queue: deque[str] = deque([entity_id])
         result: list[BaseModel] = []
 
         while queue:
-            current = queue.pop(0)
+            current = queue.popleft()
             # Walk forward
             for edge in self._forward.get(current, []):
                 if edge.target_id not in visited:
@@ -183,7 +192,7 @@ class KnowledgeGraph:
         Returns all reachable entities including the starting entities.
         """
         visited: set[str] = set()
-        queue: list[str] = list(ids)
+        queue: deque[str] = deque(ids)
         result: list[BaseModel] = []
 
         for entity_id in ids:
@@ -194,7 +203,7 @@ class KnowledgeGraph:
                     result.append(entity)
 
         while queue:
-            current = queue.pop(0)
+            current = queue.popleft()
             for edge in self._forward.get(current, []):
                 if edge.target_id not in visited:
                     visited.add(edge.target_id)

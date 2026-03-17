@@ -179,9 +179,7 @@ def status_cmd() -> None:
     Example:
       kanon status
     """
-    from kanon.models.entities import (
-        Capability, Constraint, Evidence, Fact, LearningObjective, Audience,
-    )
+    from kanon.models.entities import Fact
 
     g = _get_graph()
 

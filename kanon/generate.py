@@ -15,6 +15,30 @@ ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
 ANTHROPIC_MODEL = "claude-sonnet-4-6"
 
 
+def _validate_inputs(
+    graph: KnowledgeGraph,
+    concept_ids: list[str],
+    audience_id: str,
+) -> tuple[list[Concept], Audience]:
+    """Validate that concept and audience IDs exist in the graph.
+
+    Returns the resolved Concept and Audience entities.
+    Raises ValueError if any ID is missing or the wrong type.
+    """
+    concepts = []
+    for cid in concept_ids:
+        entity = graph.get(cid)
+        if not isinstance(entity, Concept):
+            raise ValueError(f"Concept '{cid}' not found in graph")
+        concepts.append(entity)
+
+    audience = graph.get(audience_id)
+    if not isinstance(audience, Audience):
+        raise ValueError(f"Audience '{audience_id}' not found in graph")
+
+    return concepts, audience
+
+
 def load_template(name: str) -> dict:
     path = TEMPLATES_DIR / f"{name}.yaml"
     with open(path) as f:
@@ -28,19 +52,7 @@ def generate_asset_dry_run(
     audience_id: str,
 ) -> dict[str, Any]:
     template = load_template(template_name)
-
-    # Validate concepts exist
-    concepts = []
-    for cid in concept_ids:
-        entity = graph.get(cid)
-        if not isinstance(entity, Concept):
-            raise ValueError(f"Concept '{cid}' not found in graph")
-        concepts.append(entity)
-
-    # Validate audience exists
-    audience = graph.get(audience_id)
-    if not isinstance(audience, Audience):
-        raise ValueError(f"Audience '{audience_id}' not found in graph")
+    concepts, audience = _validate_inputs(graph, concept_ids, audience_id)
 
     # Resolve subgraph (forward edges from concepts)
     subgraph = graph.subgraph(concept_ids)
@@ -164,15 +176,15 @@ def _build_section(section_name, concepts, subgraph, audience):
     return "\n\n".join(parts) if parts else f"*{section_name.replace('_', ' ').title()} content to be added.*"
 
 
-def _collect_evidence(subgraph, graph=None):
+def _collect_evidence(subgraph, graph: KnowledgeGraph) -> list[str]:
     """Collect evidence IDs from facts in the subgraph.
 
     The subgraph follows forward edges from concepts, but facts point
     *to* concepts (via fact.concept), so they aren't in the forward
-    subgraph. When a graph is provided, we also find facts that
-    reference concepts in the subgraph via reverse edges.
+    subgraph. This also finds facts that reference concepts in the
+    subgraph via reverse edges.
     """
-    evidence_ids = set()
+    evidence_ids: set[str] = set()
 
     # Collect from facts already in the subgraph
     for entity in subgraph:
@@ -180,11 +192,10 @@ def _collect_evidence(subgraph, graph=None):
             evidence_ids.update(entity.evidence)
 
     # Also find facts that point to concepts in the subgraph
-    if graph is not None:
-        concept_ids = {e.id for e in subgraph if isinstance(e, Concept)}
-        for entity in graph.entities.values():
-            if isinstance(entity, Fact) and entity.concept in concept_ids:
-                evidence_ids.update(entity.evidence)
+    concept_ids = {e.id for e in subgraph if isinstance(e, Concept)}
+    for entity in graph.entities.values():
+        if isinstance(entity, Fact) and entity.concept in concept_ids:
+            evidence_ids.update(entity.evidence)
 
     return list(evidence_ids)
 
@@ -289,19 +300,7 @@ def generate_asset_llm(
         )
 
     template = load_template(template_name)
-
-    # Validate concepts
-    concepts = []
-    for cid in concept_ids:
-        entity = graph.get(cid)
-        if not isinstance(entity, Concept):
-            raise ValueError(f"Concept '{cid}' not found in graph")
-        concepts.append(entity)
-
-    # Validate audience
-    audience = graph.get(audience_id)
-    if not isinstance(audience, Audience):
-        raise ValueError(f"Audience '{audience_id}' not found in graph")
+    concepts, audience = _validate_inputs(graph, concept_ids, audience_id)
 
     # Resolve subgraph
     subgraph = graph.subgraph(concept_ids)
