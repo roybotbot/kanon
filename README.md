@@ -97,15 +97,19 @@ The full Kanon system extends the PoC with:
 |-------|------|---------|
 | Ontology | Owlready2 / OWL | Formal reasoning and validation |
 | Database | PostgreSQL + pgvector | Structured storage + vector embeddings |
-| CMS | Directus | Editing, review workflows, permissions |
+| CMS | Directus | Editing, review workflows, permissions, version history |
 | RAG | pgvector | Ontology-scoped retrieval against evidence |
 | LLM | Claude API | Generation with inline fact citations and post-generation validation |
 | Ingestion | Python + Claude API | Decompose docs, Slack, wikis into ontology objects |
 | Evidence Crawler | Python | Monitor source URLs, trigger drift automatically |
+| Governance | Directus + Python | Review routing, approval workflows, conflict resolution |
+| Versioning | PostgreSQL | Immutable asset snapshots on publish, version pinning per cohort |
 | API | FastAPI | Expose the system to frontends and integrations |
 | Frontend | Next.js | Browse graph, inspect audit trail, manage review queue |
 | Rendering | Pandoc | Export to PDF, slides, worksheets |
-| Observability | PostgreSQL | Queryable audit trail for every decision |
+| Audit | PostgreSQL | Queryable trail for every pipeline decision — inputs, outputs, reasoning |
+| Notifications | Webhooks / Slack / Email | Confidence-drop alerts, review assignments, drift reports |
+| Auth / Roles | Directus | Multi-user with content author, reviewer, and admin roles |
 | Automation | Python | Crawl, detect, score, notify pipelines |
 
 ## Project Structure
