@@ -329,6 +329,22 @@ def generate_cmd(template_type: str, concepts: str, audience: str, dry_run: bool
     if result.get("input_tokens"):
         click.echo(f"  Tokens:     {result['input_tokens']} in / {result['output_tokens']} out")
 
+    # Citation validation (LLM-generated content only)
+    if result["generation_method"] == "llm":
+        from kanon.citations import validate_citations, strip_citations
+
+        report = validate_citations(result.get("content", ""), g)
+        if report.total_citations > 0:
+            click.echo(f"\n  Citations:  {report.total_citations} total, {len(report.valid)} valid")
+            if report.is_valid:
+                click.echo(f"  Validation: ✅ all citations reference active facts")
+            else:
+                click.echo(f"  Validation: ❌ issues found")
+                for failure in report.failures:
+                    click.echo(f"    - {failure}")
+        else:
+            click.echo(f"\n  Citations:  none found in output")
+
     logger.log(
         operation="generate",
         input={"template": template_type, "concepts": concept_ids, "audience": audience, "dry_run": dry_run},

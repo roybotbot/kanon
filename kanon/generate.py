@@ -304,8 +304,15 @@ def generate_asset_llm(
     template = load_template(template_name)
     concepts, audience = _validate_inputs(graph, concept_ids, audience_id)
 
-    # Resolve subgraph
+    # Resolve subgraph (forward edges from concepts)
     subgraph = graph.subgraph(concept_ids)
+
+    # Also include facts that reference these concepts (reverse relationship)
+    concept_id_set = {c.id for c in concepts}
+    for entity in graph.entities.values():
+        if isinstance(entity, Fact) and entity.concept in concept_id_set:
+            if entity not in subgraph:
+                subgraph.append(entity)
 
     # Build knowledge context
     knowledge_context = _build_knowledge_context(
