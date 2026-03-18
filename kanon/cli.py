@@ -329,11 +329,13 @@ def generate_cmd(template_type: str, concepts: str, audience: str, dry_run: bool
     if result.get("input_tokens"):
         click.echo(f"  Tokens:     {result['input_tokens']} in / {result['output_tokens']} out")
 
-    # Citation validation (LLM-generated content only)
+    # Citation validation and reports (LLM-generated content only)
     if result["generation_method"] == "llm":
         from kanon.citations import validate_citations, strip_citations
+        from kanon.citation_report import render_citation_markdown, render_citation_html
 
-        report = validate_citations(result.get("content", ""), g)
+        content = result.get("content", "")
+        report = validate_citations(content, g)
         if report.total_citations > 0:
             click.echo(f"\n  Citations:  {report.total_citations} total, {len(report.valid)} valid")
             if report.is_valid:
@@ -344,6 +346,21 @@ def generate_cmd(template_type: str, concepts: str, audience: str, dry_run: bool
                     click.echo(f"    - {failure}")
         else:
             click.echo(f"\n  Citations:  none found in output")
+
+        # Save citation report artifacts
+        report_dir = Path(__file__).parent.parent / "docs"
+        report_base = f"{asset_id}"
+
+        md_report = render_citation_markdown(content, report, result["name"])
+        md_path = report_dir / f"{report_base}-citations.md"
+        md_path.write_text(md_report)
+
+        html_report = render_citation_html(content, report, g, result["name"])
+        html_path = report_dir / f"{report_base}-citations.html"
+        html_path.write_text(html_report)
+
+        click.echo(f"\n  Report MD:  file://{md_path.resolve()}")
+        click.echo(f"  Report HTML: file://{html_path.resolve()}")
 
     logger.log(
         operation="generate",
