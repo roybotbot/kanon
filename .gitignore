@@ -29,3 +29,6 @@ Thumbs.db
 
 # Runtime logs
 logs/
+
+# Experiment artifacts (generated assets, reports)
+artifacts/
