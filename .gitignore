@@ -32,3 +32,6 @@ logs/
 
 # Experiment artifacts (generated assets, reports)
 artifacts/
+
+# Git worktrees
+.worktrees/
