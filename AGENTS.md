@@ -44,9 +44,11 @@ Ontology-driven knowledge system for fact-traceable maintenance of training cont
 
 ## Current state
 
-- PoC complete, validated (20/20 tests pass across two domains)
-- Next experiment: claim-level traceability ({{fact:ID}} inline citations)
-- See VALIDATION.md for results, EXPERIMENT_FRAMEWORK.md in Obsidian for the plan
+- PoC complete, validated (20/20 validation tests pass across two domains)
+- Experiment 01 (claim-level traceability) in progress on branch `experiment/01-claim-traceability`
+- kanon/citations.py: extract_citations, validate_citations, strip_citations
+- LLM generation now produces {{fact:ID}} inline citations, CLI validates them
+- See VALIDATION.md for PoC results, EXPERIMENT_FRAMEWORK.md in Obsidian for the plan
 
 ## Domains
 

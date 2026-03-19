@@ -226,12 +226,14 @@ def _build_knowledge_context(
             parts.append(f"Content:\n{c.content_block}")
         parts.append("")
 
-    # Facts
+    # Facts (with IDs for citation)
     facts = [e for e in subgraph if isinstance(e, Fact) and e.status == "active"]
     if facts:
         parts.append("## Facts")
+        parts.append("Each fact has an ID. When you use a fact in the output, cite it inline as {{fact:ID}}.")
+        parts.append("")
         for f in facts:
-            line = f"- {f.claim}: {f.value}"
+            line = f"- **{f.id}**: {f.claim}: {f.value}"
             if f.condition:
                 line += f" (condition: {f.condition})"
             parts.append(line)
@@ -302,8 +304,15 @@ def generate_asset_llm(
     template = load_template(template_name)
     concepts, audience = _validate_inputs(graph, concept_ids, audience_id)
 
-    # Resolve subgraph
+    # Resolve subgraph (forward edges from concepts)
     subgraph = graph.subgraph(concept_ids)
+
+    # Also include facts that reference these concepts (reverse relationship)
+    concept_id_set = {c.id for c in concepts}
+    for entity in graph.entities.values():
+        if isinstance(entity, Fact) and entity.concept in concept_id_set:
+            if entity not in subgraph:
+                subgraph.append(entity)
 
     # Build knowledge context
     knowledge_context = _build_knowledge_context(
@@ -324,6 +333,16 @@ def generate_asset_llm(
         "\"[Insufficient knowledge graph coverage — add more entities to populate this section.]\"\n"
         "- Your job is to organize, clarify, and adapt the provided content for "
         "the target audience — not to supplement it.\n\n"
+        "CITATION REQUIREMENT:\n"
+        "- The knowledge context includes a Facts section with IDs like "
+        "tool_use_max_tools, pasta_water_ratio, etc.\n"
+        "- When you use information from a fact, cite it inline as {{fact:FACT_ID}}.\n"
+        "- ONLY use IDs from the Facts section. Do NOT cite concept IDs or task IDs.\n"
+        "- Place the citation immediately after the claim.\n"
+        "- Example: 'The maximum number of tools per request is 128 {{fact:tool_use_max_tools}}.'\n"
+        "- Procedural steps and descriptions from concepts/tasks do NOT get citations.\n"
+        "- Only specific, verifiable claims from the Facts section get citations.\n"
+        "- If no facts are relevant to a section, that's fine — not every sentence needs a citation.\n\n"
         "Write in Markdown format. Adapt tone and structure to the target audience."
     )
 
