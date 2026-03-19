@@ -468,3 +468,80 @@ def drift_cmd(evidence_id: str, change_description: str) -> None:
         output_path=scoped_path,
     )
     click.echo(f"\n  Visualization: file://{html_path.resolve()}")
+
+
+# ---------------------------------------------------------------------------
+# review
+# ---------------------------------------------------------------------------
+
+
+@cli.command("review")
+@click.option("--approve", "approve_id", default=None, help="Approve an asset by ID.")
+@click.option("--reject", "reject_id", default=None, help="Reject an asset by ID.")
+def review_cmd(approve_id: str | None, reject_id: str | None) -> None:
+    """Review assets against hard failure conditions.
+
+    Without options, lists all assets with their review status.
+    With --approve or --reject, updates the asset's lifecycle state.
+
+    \b
+    Hard failure conditions:
+      - Any cited fact is superseded or retracted
+      - Any cited fact ID doesn't exist in the graph
+      - Evidence was verified after the asset was last updated
+
+    \b
+    Examples:
+      kanon review                              Show review status of all assets
+      kanon review --approve tool_use_setup_guide_llm    Approve an asset
+      kanon review --reject tool_use_setup_guide_llm     Reject an asset
+    """
+    from kanon.review import approve_asset, reject_asset, review_all_assets
+
+    g = _get_graph()
+    logger = _get_logger()
+
+    if approve_id:
+        assets_dir = DATA_DIR / "assets"
+        try:
+            approve_asset(approve_id, assets_dir)
+            click.echo(f"✅ Approved: {approve_id} → lifecycle_state = approved")
+            logger.log(operation="review_approve", input={"asset_id": approve_id}, result="approved")
+        except ValueError as e:
+            click.echo(f"Error: {e}")
+        return
+
+    if reject_id:
+        assets_dir = DATA_DIR / "assets"
+        try:
+            reject_asset(reject_id, assets_dir)
+            click.echo(f"❌ Rejected: {reject_id} → lifecycle_state = needs_review")
+            logger.log(operation="review_reject", input={"asset_id": reject_id}, result="needs_review")
+        except ValueError as e:
+            click.echo(f"Error: {e}")
+        return
+
+    # Default: review all assets
+    results = review_all_assets(g)
+
+    click.echo("=== Asset Review ===\n")
+
+    passing = [r for r in results if r.passes]
+    failing = [r for r in results if not r.passes]
+
+    if failing:
+        click.echo(f"Needs Review ({len(failing)}):")
+        for r in failing:
+            click.echo(f"\n  ❌ {r.asset_name} [{r.asset_id}]")
+            click.echo(f"     State: {r.lifecycle_state}")
+            for failure in r.failures:
+                click.echo(f"     • {failure}")
+        click.echo()
+
+    if passing:
+        click.echo(f"Passing ({len(passing)}):")
+        for r in passing:
+            click.echo(f"  ✅ {r.asset_name} [{r.asset_id}]  ({r.lifecycle_state})")
+        click.echo()
+
+    click.echo(f"Summary: {len(passing)} pass, {len(failing)} fail")
