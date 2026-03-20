@@ -545,3 +545,81 @@ def review_cmd(approve_id: str | None, reject_id: str | None) -> None:
         click.echo()
 
     click.echo(f"Summary: {len(passing)} pass, {len(failing)} fail")
+
+
+# ---------------------------------------------------------------------------
+# crawl
+# ---------------------------------------------------------------------------
+
+
+@cli.command("crawl")
+def crawl_cmd() -> None:
+    """Crawl evidence source URLs and detect meaningful changes.
+
+    Fetches each evidence source URL, compares against stored baselines,
+    and reports changes. First run saves baselines. Subsequent runs detect
+    content changes and can trigger drift detection.
+
+    \b
+    Examples:
+      kanon crawl                     Check all evidence sources for changes
+    """
+    from kanon.crawl import crawl_evidence
+
+    g = _get_graph()
+    logger = _get_logger()
+
+    click.echo("Crawling evidence sources... ", nl=False)
+    report = crawl_evidence(g, DATA_DIR)
+    click.echo("done.\n")
+
+    click.echo(f"=== Crawl Report ===\n")
+
+    if report.new:
+        click.echo(f"New baselines ({len(report.new)}):")
+        for r in report.new:
+            click.echo(f"  📥 {r.evidence_id}: {r.url}")
+        click.echo()
+
+    if report.changed:
+        click.echo(f"Changed ({len(report.changed)}):")
+        for r in report.changed:
+            click.echo(f"  ⚠️  {r.evidence_id}: {r.diff_summary}")
+            click.echo(f"     {r.url}")
+        click.echo()
+
+    if report.unchanged:
+        click.echo(f"Unchanged ({len(report.unchanged)}):")
+        for r in report.unchanged:
+            click.echo(f"  ✅ {r.evidence_id}")
+        click.echo()
+
+    if report.errors:
+        click.echo(f"Errors ({len(report.errors)}):")
+        for r in report.errors:
+            click.echo(f"  ❌ {r.evidence_id}: {r.error}")
+        click.echo()
+
+    click.echo(f"Summary: {len(report.new)} new, {len(report.changed)} changed, "
+               f"{len(report.unchanged)} unchanged, {len(report.errors)} errors")
+
+    # Auto-trigger drift for changed evidence
+    if report.changed:
+        click.echo(f"\n--- Drift Detection ---\n")
+        for r in report.changed:
+            drift_report = detect_drift(g, r.evidence_id, r.diff_summary or "Content changed")
+            if drift_report.stale_facts or drift_report.affected_assets:
+                click.echo(f"  {r.evidence_id}:")
+                for fact in drift_report.stale_facts:
+                    click.echo(f"    Stale fact: [{fact.id}] {fact.claim}: {fact.value}")
+                for asset in drift_report.affected_assets:
+                    click.echo(f"    Affected: {asset.name}")
+            else:
+                click.echo(f"  {r.evidence_id}: no downstream impact")
+
+    logger.log(
+        operation="crawl",
+        input={"evidence_count": len(report.results)},
+        result=f"{len(report.new)} new, {len(report.changed)} changed, "
+               f"{len(report.unchanged)} unchanged, {len(report.errors)} errors",
+    )
