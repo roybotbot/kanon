@@ -13,12 +13,15 @@ Ontology-driven knowledge system for fact-traceable maintenance of training cont
 ## Commands
 
 ```bash
-.venv/bin/python -m pytest tests/ -q          # all tests (133)
+.venv/bin/python -m pytest tests/ -q          # all tests (197)
 .venv/bin/python -m pytest tests/test_validation.py -v  # validation suite (20)
 .venv/bin/kanon graph                          # browse knowledge graph
 .venv/bin/kanon generate --type setup_guide --concepts tool_use --audience enterprise_developer --dry-run
 .venv/bin/kanon generate --type setup_guide --concepts tool_use --audience enterprise_developer
 .venv/bin/kanon drift --evidence anthropic_tool_use_docs --change "API format changed"
+.venv/bin/kanon review                         # hard failure conditions on all assets
+.venv/bin/kanon crawl                          # fetch evidence URLs, detect changes
+.venv/bin/kanon ingest --file doc.txt --source "Name" --save  # decompose text into entities
 ```
 
 ## Architecture
@@ -26,6 +29,11 @@ Ontology-driven knowledge system for fact-traceable maintenance of training cont
 - `kanon/models/entities.py` — Pydantic entity definitions (Concept, Fact, Evidence, Asset, etc.)
 - `kanon/graph.py` — KnowledgeGraph with forward/reverse indexes, BFS traversal
 - `kanon/generate.py` — dry-run + LLM asset generation from knowledge graph context
+- `kanon/citations.py` — {{fact:ID}} citation extraction, validation, stripping
+- `kanon/citation_report.py` — markdown + HTML citation reports
+- `kanon/review.py` — hard failure conditions, approve/reject lifecycle actions
+- `kanon/crawl.py` — evidence URL fetching, HTML stripping, baseline diffing
+- `kanon/ingest.py` — LLM decomposition of unstructured text into ontology entities
 - `kanon/confidence.py` — scoring engine (evidence, freshness, structural, transformation)
 - `kanon/drift.py` — detect evidence changes, trace impact to facts and assets
 - `kanon/auth.py` — Anthropic API auth (OAuth from ~/.pi/agent/auth.json or ANTHROPIC_API_KEY)
@@ -44,11 +52,9 @@ Ontology-driven knowledge system for fact-traceable maintenance of training cont
 
 ## Current state
 
-- PoC complete, validated (20/20 validation tests pass across two domains)
-- Experiment 01 (claim-level traceability) in progress on branch `experiment/01-claim-traceability`
-- kanon/citations.py: extract_citations, validate_citations, strip_citations
-- LLM generation now produces {{fact:ID}} inline citations, CLI validates them
-- See VALIDATION.md for PoC results, EXPERIMENT_FRAMEWORK.md in Obsidian for the plan
+- All 6 experiments complete, merged to main
+- 197 tests (192 unit + 5 LLM), all passing
+- See VALIDATION.md for PoC results, EXPERIMENT_FRAMEWORK.md in Obsidian for full experiment findings
 
 ## Domains
 
