@@ -623,3 +623,82 @@ def crawl_cmd() -> None:
         result=f"{len(report.new)} new, {len(report.changed)} changed, "
                f"{len(report.unchanged)} unchanged, {len(report.errors)} errors",
     )
+
+
+# ---------------------------------------------------------------------------
+# ingest
+# ---------------------------------------------------------------------------
+
+
+@cli.command("ingest")
+@click.option("--file", "file_path", required=True, help="Path to text file to ingest.")
+@click.option("--source", "source_name", default=None, help="Name of the source document.")
+@click.option("--url", "source_url", default=None, help="URL of the source document.")
+@click.option("--save", "do_save", is_flag=True, default=False, help="Save entities to data/ directory.")
+def ingest_cmd(file_path: str, source_name: str | None, source_url: str | None, do_save: bool) -> None:
+    """Ingest unstructured text into ontology entities via LLM.
+
+    Reads a text file, extracts concepts, facts, tasks, and evidence,
+    validates against Pydantic models, and optionally saves to data/.
+
+    \b
+    Examples:
+      kanon ingest --file docs.txt --source "API Documentation"
+      kanon ingest --file docs.txt --source "API Docs" --url https://example.com --save
+    """
+    from kanon.ingest import ingest_text, validate_ingested, save_ingested
+
+    path = Path(file_path)
+    if not path.exists():
+        click.echo(f"Error: File not found: {file_path}")
+        return
+
+    text = path.read_text()
+    name = source_name or path.stem
+
+    click.echo(f"Ingesting {path.name} ({len(text)} chars)... ", nl=False)
+
+    try:
+        entities = ingest_text(text, source_name=name, source_url=source_url)
+    except Exception as e:
+        click.echo(f"\nError: {e}")
+        return
+
+    click.echo("done.\n")
+
+    # Summary
+    click.echo("=== Ingestion Results ===\n")
+    for entity_type in ["evidence", "concepts", "facts", "tasks"]:
+        items = entities.get(entity_type, [])
+        if items:
+            click.echo(f"  {entity_type.title()} ({len(items)}):")
+            for item in items:
+                label = item.get("name", item.get("claim", item.get("id", "?")))
+                click.echo(f"    - {item.get('id')}: {label}")
+
+    # Validate
+    errors = validate_ingested(entities)
+    if errors:
+        click.echo(f"\n  Validation: ❌")
+        for entity_type, msgs in errors.items():
+            for msg in msgs:
+                click.echo(f"    {entity_type}: {msg}")
+    else:
+        click.echo(f"\n  Validation: ✅ all entities pass")
+
+    # Save
+    if do_save and not errors:
+        logger = _get_logger()
+        written = save_ingested(entities, DATA_DIR)
+        click.echo(f"\n  Saved {len(written)} files to data/")
+        for w in written:
+            click.echo(f"    {w}")
+        logger.log(
+            operation="ingest",
+            input={"file": file_path, "source": name},
+            result=f"{len(written)} entities saved",
+        )
+    elif do_save and errors:
+        click.echo(f"\n  Not saved — fix validation errors first")
+    else:
+        click.echo(f"\n  Dry run — use --save to persist")
