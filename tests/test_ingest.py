@@ -121,14 +121,28 @@ class TestSaveIngested:
         for subdir in ["concepts", "facts", "tasks", "evidence"]:
             (tmp_path / subdir).mkdir()
 
-        written = save_ingested(VALID_ENTITIES, tmp_path)
+        written, skipped = save_ingested(VALID_ENTITIES, tmp_path)
         assert len(written) == 4  # 1 evidence + 1 concept + 1 fact + 1 task
+        assert len(skipped) == 0
 
         # Verify files exist and are valid YAML
         concept_path = tmp_path / "concepts" / "batch_processing.yaml"
         assert concept_path.exists()
         data = yaml.safe_load(concept_path.read_text())
         assert data["name"] == "Batch Processing"
+
+    def test_skips_existing_entities(self, tmp_path):
+        """Should not overwrite existing entity files."""
+        for subdir in ["concepts", "facts", "tasks", "evidence"]:
+            (tmp_path / subdir).mkdir()
+
+        # Save once
+        save_ingested(VALID_ENTITIES, tmp_path)
+
+        # Save again — should skip all
+        written, skipped = save_ingested(VALID_ENTITIES, tmp_path)
+        assert len(written) == 0
+        assert len(skipped) == 4
 
     def test_saved_entities_load_into_graph(self, tmp_path):
         """Saved entities should be loadable by KnowledgeGraph."""
@@ -137,7 +151,7 @@ class TestSaveIngested:
                         "audiences", "assets"]:
             (tmp_path / subdir).mkdir()
 
-        save_ingested(VALID_ENTITIES, tmp_path)
+        save_ingested(VALID_ENTITIES, tmp_path)  # returns (written, skipped)
         graph = KnowledgeGraph(data_dir=tmp_path)
 
         assert graph.get("batch_processing") is not None

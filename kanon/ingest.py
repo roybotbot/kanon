@@ -116,13 +116,35 @@ def ingest_text(
     result = response.json()
     content = result["content"][0]["text"]
 
-    # Parse JSON — handle markdown fences if the LLM wraps it
+    # Parse JSON — handle markdown fences and truncated output
     content = content.strip()
     if content.startswith("```"):
         lines = content.split("\n")
         content = "\n".join(lines[1:-1])
 
-    entities = json.loads(content)
+    try:
+        entities = json.loads(content)
+    except json.JSONDecodeError:
+        # LLM may have been truncated — try to find the last complete entity
+        # by finding the last valid JSON prefix
+        # Try progressively shorter substrings ending at } or ]
+        parsed = None
+        for i in range(len(content), 0, -1):
+            if content[i - 1] in ('}', ']'):
+                # Try to close any open structures
+                attempt = content[:i]
+                # Count unclosed braces/brackets and close them
+                opens = attempt.count('{') - attempt.count('}')
+                opens_b = attempt.count('[') - attempt.count(']')
+                attempt += ']' * opens_b + '}' * opens
+                try:
+                    parsed = json.loads(attempt)
+                    break
+                except json.JSONDecodeError:
+                    continue
+        if parsed is None:
+            raise
+        entities = parsed
 
     # Inject today's date into facts and evidence metadata
     today = date.today().isoformat()
@@ -172,16 +194,22 @@ def validate_ingested(entities: dict[str, list[dict]]) -> dict[str, list[str]]:
     return errors
 
 
-def save_ingested(entities: dict[str, list[dict]], data_dir: str | Any) -> list[str]:
+def save_ingested(
+    entities: dict[str, list[dict]],
+    data_dir: str | Any,
+) -> tuple[list[str], list[str]]:
     """Save ingested entities as YAML files in the data directory.
 
-    Returns list of paths written.
+    Skips entities whose ID already exists (does not overwrite).
+
+    Returns (written paths, skipped IDs).
     """
     from pathlib import Path
     import yaml
 
     data_path = Path(data_dir)
     written: list[str] = []
+    skipped: list[str] = []
 
     type_to_dir = {
         "concepts": "concepts",
@@ -197,7 +225,10 @@ def save_ingested(entities: dict[str, list[dict]], data_dir: str | Any) -> list[
         for item in items:
             entity_id = item.get("id", "unknown")
             path = entity_dir / f"{entity_id}.yaml"
+            if path.exists():
+                skipped.append(f"{entity_type}/{entity_id}")
+                continue
             path.write_text(yaml.dump(item, default_flow_style=False, sort_keys=False))
             written.append(str(path))
 
-    return written
+    return written, skipped

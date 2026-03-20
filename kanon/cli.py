@@ -689,10 +689,14 @@ def ingest_cmd(file_path: str, source_name: str | None, source_url: str | None, 
     # Save
     if do_save and not errors:
         logger = _get_logger()
-        written = save_ingested(entities, DATA_DIR)
+        written, skipped = save_ingested(entities, DATA_DIR)
         click.echo(f"\n  Saved {len(written)} files to data/")
         for w in written:
             click.echo(f"    {w}")
+        if skipped:
+            click.echo(f"\n  Skipped {len(skipped)} (already exist):")
+            for s in skipped:
+                click.echo(f"    ⚠️  {s}")
         logger.log(
             operation="ingest",
             input={"file": file_path, "source": name},
