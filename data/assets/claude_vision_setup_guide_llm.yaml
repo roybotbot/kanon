@@ -1,0 +1,94 @@
+id: claude_vision_setup_guide_llm
+name: Claude Vision Setup Guide
+asset_type: guide
+delivery_format: setup_guide
+lifecycle_state: draft
+teaches:
+- claude_vision
+targets:
+- enterprise_developer
+evidence_links: []
+generation_method: llm
+generated_at: '2026-03-22T08:51:16.451456+00:00'
+last_updated: '2026-03-22T08:51:16.451456+00:00'
+confidence:
+  evidence: 1.0
+  freshness: 1.0
+  structural: 1.0
+  transformation: 0.7
+  overall: 0.94
+content: "# Claude Vision: Setup Guide\n\n**Audience:** Enterprise Developer \u2014\
+  \ Backend API Integration\n**Topic:** Enabling and using image inputs with Claude\n\
+  \n---\n\n## Overview\n\nClaude Vision is Claude's capability to accept and analyze\
+  \ images as part of API requests. When images are included in a request, Claude\
+  \ analyzes all provided images when formulating its response {{fact:}}\u2014 making\
+  \ it suitable for tasks such as comparing or contrasting visual content, extracting\
+  \ information from images, or multimodal workflows that combine text and image inputs.\n\
+  \nThis guide walks backend engineers through the steps required to integrate image\
+  \ inputs into API requests, verify that the integration is functioning correctly,\
+  \ and troubleshoot common issues.\n\n> **Note:** Claude Vision is available via\
+  \ the API, the Console Workbench, and claude.ai. This guide focuses exclusively\
+  \ on API integration.\n\n---\n\n## Prerequisites\n\nBefore proceeding, ensure the\
+  \ following are in place:\n\n- **API authentication credentials** \u2014 You should\
+  \ already have API access configured, including a valid API key. (API authentication\
+  \ is assumed knowledge for this guide.)\n- **API client or HTTP tooling** \u2014\
+  \ A backend environment capable of constructing and sending API requests (e.g.,\
+  \ a server-side application, scripting environment, or HTTP client).\n- **Understanding\
+  \ of the standard Claude API request structure** \u2014 Familiarity with how to\
+  \ construct a basic text-based request before adding image inputs.\n- **Image assets\
+  \ ready for testing** \u2014 At least one image file or image source available to\
+  \ use during verification.\n\n> **Important:** Be aware that there are limits on\
+  \ the number and size of images that can be submitted per request. Review the current\
+  \ limits in the API documentation before designing your integration.\n\n---\n\n\
+  ## Procedure\n\nFollow these steps to integrate image inputs into your Claude API\
+  \ requests.\n\n### Step 1: Review Image Constraints\n\nBefore building your integration,\
+  \ confirm the applicable limits on:\n\n- The **number of images** allowed per request\n\
+  - The **size** of individual images\n\n[Insufficient knowledge graph coverage \u2014\
+  \ add more entities to populate this section with specific numeric limits.]\n\n\
+  Design your integration to validate inputs against these constraints before submitting\
+  \ requests, in order to avoid unnecessary API errors.\n\n### Step 2: Construct a\
+  \ Multimodal Request\n\nModify your existing API request structure to include one\
+  \ or more image inputs alongside your text prompt. A multimodal request combines\
+  \ image content with a text instruction so that Claude can analyze the image(s)\
+  \ when formulating its response.\n\n[Insufficient knowledge graph coverage \u2014\
+  \ add more entities to populate this section with the specific request schema or\
+  \ content block format required for image inputs.]\n\n### Step 3: Handle Multiple\
+  \ Images (If Applicable)\n\nIf your use case requires submitting more than one image\
+  \ per request \u2014 for example, to have Claude compare or contrast images \u2014\
+  \ include all relevant images within the same request. Claude will analyze all provided\
+  \ images when generating its response.\n\nEnsure your application logic respects\
+  \ the per-request image count limit when batching or assembling multi-image payloads.\n\
+  \n### Step 4: Submit the Request\n\nSend the constructed request to the API endpoint\
+  \ using your standard authentication headers and request method.\n\n[Insufficient\
+  \ knowledge graph coverage \u2014 add more entities to populate this section with\
+  \ the specific endpoint and HTTP method for vision-enabled requests.]\n\n---\n\n\
+  ## Verification\n\nAfter completing the integration, verify correct behavior as\
+  \ follows:\n\n1. **Single-image test** \u2014 Submit a request containing one image\
+  \ and a descriptive instruction (e.g., \"Describe what is shown in this image.\"\
+  ). Confirm that the response reflects the image content accurately.\n\n2. **Multi-image\
+  \ test** \u2014 Submit a request containing two or more images with an instruction\
+  \ that requires comparing them (e.g., \"What are the differences between these two\
+  \ images?\"). Confirm that Claude's response references both images.\n\n3. **Boundary\
+  \ test** \u2014 Submit a request that approaches or exceeds the image count or size\
+  \ limits to confirm that your application handles errors or validation failures\
+  \ gracefully.\n\n4. **Response structure validation** \u2014 Confirm that the API\
+  \ response structure for multimodal requests is consistent with what your application\
+  \ expects and that image-related metadata (if any) is handled correctly.\n\n---\n\
+  \n## Troubleshooting\n\n| Symptom | Likely Cause | Recommended Action |\n|---|---|---|\n\
+  | Request rejected with a size or count error | Image payload exceeds per-request\
+  \ limits | Validate image size and count before submission; reduce payload if necessary\
+  \ |\n| Response does not reference image content | Image not correctly included\
+  \ in the request body | Review the request structure to confirm the image content\
+  \ block is properly formatted and positioned |\n| Authentication error on multimodal\
+  \ request | API key missing or malformed in headers | Verify API credentials are\
+  \ present and correctly formatted \u2014 same as standard text requests |\n| Partial\
+  \ image analysis in multi-image requests | Incorrect assumption about which images\
+  \ are included | Confirm all intended images are present in the request; Claude\
+  \ analyzes all provided images when formulating its response |\n| Inconsistent results\
+  \ across requests | Image quality, resolution, or format variability | Standardize\
+  \ image inputs where possible; test with consistent formats |\n\n---\n\n> **Further\
+  \ reading:** For specific numeric limits on image count and size, and for the detailed\
+  \ request schema for multimodal content, consult the official Claude API reference\
+  \ documentation.\n>\n> [Insufficient knowledge graph coverage \u2014 additional\
+  \ entity coverage for image format requirements, supported MIME types, and base64\
+  \ encoding guidance would allow this guide to be expanded.]"
