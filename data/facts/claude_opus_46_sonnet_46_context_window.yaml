@@ -1,0 +1,10 @@
+id: claude_opus_46_sonnet_46_context_window
+claim: Context window size for Claude Opus 4.6 and Sonnet 4.6
+value: 1 million tokens
+numeric_value: 1000000
+concept: context_window
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_context_windows_doc

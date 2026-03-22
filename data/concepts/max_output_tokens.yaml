@@ -1,0 +1,7 @@
+id: max_output_tokens
+name: Max Output Tokens
+description: The maximum number of tokens a model can generate in a single response.
+content_block: Each Claude model has a defined upper limit on how many tokens it can
+  produce in one output. Claude Opus 4.6 supports up to 128,000 output tokens, while
+  Claude Sonnet 4.6 and Haiku 4.5 each support up to 64,000 output tokens. This limit
+  affects tasks requiring long-form generation.

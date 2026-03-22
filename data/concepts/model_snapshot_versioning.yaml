@@ -1,0 +1,8 @@
+id: model_snapshot_versioning
+name: Model Snapshot Versioning
+description: The practice of embedding a snapshot date in a model's name to guarantee
+  consistent, stable behavior across platforms.
+content_block: Models with the same snapshot date (e.g., 20240620) are identical across
+  all platforms and do not change. Including the snapshot date in the model name allows
+  developers to rely on stable, reproducible performance across different deployment
+  environments.

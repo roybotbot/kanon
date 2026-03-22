@@ -1,0 +1,7 @@
+id: anthropic_batch_processing_docs
+name: Anthropic Batch Processing Documentation
+description: Official Anthropic documentation covering the Message Batches API, including
+  how it works, limitations, pricing, usage instructions, and best practices.
+url: https://docs.anthropic.com/en/docs/build-with-claude/batch-processing
+source_type: documentation
+last_verified: '2026-03-22'

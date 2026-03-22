@@ -1,0 +1,10 @@
+id: batch_pricing_claude_opus_4_6_output
+claim: Batch output price for Claude Opus 4.6 per million tokens
+value: $12.50 / MTok
+numeric_value: 12.5
+concept: batch_pricing
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_batch_processing_docs

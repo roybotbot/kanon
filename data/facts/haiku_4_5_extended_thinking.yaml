@@ -1,0 +1,10 @@
+id: haiku_4_5_extended_thinking
+claim: Claude Haiku 4.5 supports extended thinking
+value: 'Yes'
+numeric_value: null
+concept: extended_thinking
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_models_overview

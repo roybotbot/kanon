@@ -1,0 +1,10 @@
+id: batch_oversized_error_code
+claim: HTTP error code returned when a batch request exceeds 256 MB
+value: 413 request_too_large
+numeric_value: 413
+concept: batch_limitations
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_batch_processing_docs

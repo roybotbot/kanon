@@ -1,0 +1,9 @@
+id: claude_vision
+name: Claude Vision
+description: Claude's capability to accept and analyze images as part of API requests
+  or chat interactions.
+content_block: Claude supports vision capabilities that allow users to include images
+  in requests via claude.ai, the Console Workbench, or the API. Claude analyzes all
+  provided images when formulating its response, which is useful for tasks like comparing
+  or contrasting images. There are limits on the number and size of images that can
+  be submitted per request.

@@ -1,0 +1,10 @@
+id: max_image_dimension_many_images
+claim: Maximum image dimension when more than 20 images are submitted in one API request
+value: 2000x2000 px
+numeric_value: null
+concept: image_upload_limits
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

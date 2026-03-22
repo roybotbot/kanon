@@ -1,0 +1,10 @@
+id: image_auto_resize_token_threshold
+claim: Token count threshold above which Claude automatically scales down an image
+value: ~1,600 tokens
+numeric_value: 1600
+concept: image_size_optimization
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

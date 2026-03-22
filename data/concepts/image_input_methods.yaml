@@ -1,0 +1,8 @@
+id: image_input_methods
+name: Image Input Methods
+description: The three ways images can be provided to Claude via the API.
+content_block: 'Images can be provided to Claude in three ways: as base64-encoded
+  image content blocks, as URL references to images hosted online, or via the Files
+  API by uploading once and referencing a returned file_id. Using the Files API is
+  recommended for images used repeatedly or in multi-turn conversations to avoid encoding
+  overhead and keep request payloads small.'

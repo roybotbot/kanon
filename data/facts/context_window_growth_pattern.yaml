@@ -1,0 +1,10 @@
+id: context_window_growth_pattern
+claim: Pattern of context window usage growth across conversation turns
+value: Linear growth with each turn, with previous turns preserved completely
+numeric_value: null
+concept: progressive_token_accumulation
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_context_windows_doc

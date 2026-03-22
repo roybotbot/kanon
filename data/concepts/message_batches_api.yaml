@@ -1,0 +1,9 @@
+id: message_batches_api
+name: Message Batches API
+description: Anthropic's API for asynchronously processing large volumes of Messages
+  requests at reduced cost.
+content_block: The Message Batches API is a cost-effective way to asynchronously process
+  large volumes of Messages requests. It reduces costs by 50% compared to standard
+  API prices and increases throughput, with most batches finishing in less than 1
+  hour. Each request in a batch is processed independently, allowing different request
+  types to be mixed within a single batch.

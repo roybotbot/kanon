@@ -1,0 +1,8 @@
+id: batch_processing_status
+name: Batch Processing Status
+description: The status field that indicates the current stage of a Message Batch's
+  lifecycle.
+content_block: The processing_status field on a Message Batch starts as in_progress
+  when the batch is created, then updates to ended once all requests have finished
+  processing and results are ready. When a cancellation is initiated, the status transitions
+  to canceling before ultimately resolving to ended.

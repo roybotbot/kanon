@@ -1,0 +1,10 @@
+id: haiku_4_5_context_window
+claim: Claude Haiku 4.5 context window size
+value: 200,000 tokens
+numeric_value: 200000
+concept: context_window
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_models_overview

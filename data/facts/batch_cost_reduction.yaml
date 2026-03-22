@@ -1,0 +1,10 @@
+id: batch_cost_reduction
+claim: Cost reduction percentage compared to standard API prices
+value: 50%
+numeric_value: 50
+concept: batch_pricing
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_batch_processing_docs

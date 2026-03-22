@@ -1,0 +1,9 @@
+id: image_upload_limits
+name: Image Upload Limits
+description: The constraints on how many images and what sizes can be submitted in
+  a single Claude request.
+content_block: Claude imposes limits on image count and dimensions per request depending
+  on the interface used. On claude.ai, up to 20 images are allowed per request, while
+  the API supports up to 600 images (100 for models with a 200k-token context window).
+  Images larger than 8000x8000 px are rejected, and a stricter 2000x2000 px limit
+  applies when more than 20 images are submitted in one API request.

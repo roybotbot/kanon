@@ -1,0 +1,10 @@
+id: image_size_optimization
+name: Image Size Optimization
+description: Guidelines for resizing images before uploading to avoid performance
+  penalties and maintain output quality.
+content_block: If an image's long edge exceeds 1568 pixels or it exceeds approximately
+  1,600 tokens, Claude will scale it down automatically before processing, which increases
+  latency without improving output quality. To optimize time-to-first-token, images
+  should be resized to no more than 1.15 megapixels and within 1568 pixels in both
+  dimensions before uploading. Very small images under 200 pixels on any edge may
+  degrade output quality.

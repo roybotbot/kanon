@@ -1,0 +1,6 @@
+id: extended_thinking
+name: Extended Thinking
+description: A Claude model feature that enables deeper reasoning on complex tasks.
+content_block: Extended thinking is a capability available on select Claude models
+  that allows the model to reason more extensively before producing a response. Claude
+  Opus 4.6, Sonnet 4.6, and Haiku 4.5 all support extended thinking.

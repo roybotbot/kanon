@@ -1,0 +1,10 @@
+id: image_tokens_200x200
+claim: Approximate token count for a 200x200 px image
+value: ~54 tokens
+numeric_value: 54
+concept: image_token_cost
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

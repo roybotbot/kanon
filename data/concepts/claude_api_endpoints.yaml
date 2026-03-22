@@ -1,0 +1,8 @@
+id: claude_api_endpoints
+name: Claude API Endpoints
+description: The endpoint types available for accessing Claude models on AWS Bedrock
+  and Google Vertex AI.
+content_block: Starting with Claude Sonnet 4.5 and all subsequent models, AWS Bedrock
+  and Google Vertex AI offer two endpoint types. Global endpoints use dynamic routing
+  for maximum availability, while regional endpoints guarantee data routing through
+  specific geographic regions.

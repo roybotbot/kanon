@@ -1,0 +1,10 @@
+id: ai_image_detection_limitation
+claim: Whether Claude can determine if an image is AI-generated
+value: Claude does not know if an image is AI-generated and may be incorrect if asked
+numeric_value: null
+concept: vision_limitations
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

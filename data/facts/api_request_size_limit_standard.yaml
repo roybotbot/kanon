@@ -1,0 +1,10 @@
+id: api_request_size_limit_standard
+claim: Request size limit for standard API endpoints
+value: 32 MB
+numeric_value: null
+concept: image_upload_limits
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

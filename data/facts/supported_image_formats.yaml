@@ -1,0 +1,10 @@
+id: supported_image_formats
+claim: Image formats supported by Claude vision
+value: JPEG, PNG, GIF, WebP
+numeric_value: null
+concept: image_format_requirements
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

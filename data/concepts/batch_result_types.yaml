@@ -1,0 +1,8 @@
+id: batch_result_types
+name: Batch Result Types
+description: The four possible outcomes for each request within a processed Message
+  Batch.
+content_block: 'Each request in a completed batch receives one of four result types:
+  succeeded, errored, canceled, or expired. Requests that errored, were canceled,
+  or expired are not billed. Results are returned in JSONL format and may not match
+  the original input order, requiring the custom_id field to match results to requests.'

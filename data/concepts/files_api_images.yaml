@@ -1,0 +1,10 @@
+id: files_api_images
+name: Files API for Images
+description: Using the Files API to upload images once and reference them by file_id
+  in subsequent requests.
+content_block: The Files API allows users to upload an image once and then reference
+  it using a file_id in subsequent messages, rather than resending base64-encoded
+  image data on every turn. This is particularly beneficial in multi-turn conversations
+  and agentic workflows where the full conversation history is resent with each request.
+  Referencing images by file_id keeps request payloads small regardless of how many
+  images accumulate in the conversation history.

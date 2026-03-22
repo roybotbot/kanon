@@ -1,0 +1,9 @@
+id: prompt_caching_in_batches
+name: Prompt Caching in Message Batches
+description: The ability to use prompt caching within batch requests to reduce costs
+  and processing time.
+content_block: The Message Batches API supports prompt caching, and the pricing discounts
+  from prompt caching and Message Batches can stack for greater savings. Because batch
+  requests are processed asynchronously and concurrently, cache hits are provided
+  on a best-effort basis. Users typically experience cache hit rates ranging from
+  30% to 98% depending on their traffic patterns.

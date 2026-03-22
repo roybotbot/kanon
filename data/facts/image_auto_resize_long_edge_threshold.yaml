@@ -1,0 +1,10 @@
+id: image_auto_resize_long_edge_threshold
+claim: Long edge pixel threshold above which Claude automatically scales down an image
+value: 1568 pixels
+numeric_value: 1568
+concept: image_size_optimization
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

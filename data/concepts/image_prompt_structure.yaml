@@ -1,0 +1,7 @@
+id: image_prompt_structure
+name: Image Prompt Structure
+description: Best practices for ordering images and text within prompts sent to Claude.
+content_block: Claude performs best when images are placed before text in a prompt,
+  following the same principle as placing long documents before queries in text prompts.
+  Images placed after text or interpolated with text still perform adequately, but
+  an image-then-text structure is preferred when the use case allows it.

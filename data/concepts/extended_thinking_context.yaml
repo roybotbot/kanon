@@ -1,0 +1,10 @@
+id: extended_thinking_context
+name: Extended Thinking and Context Window
+description: How extended thinking tokens interact with the context window, including
+  billing and stripping behavior.
+content_block: "When using extended thinking, all input and output tokens\u2014including\
+  \ thinking tokens\u2014count toward the context window limit. However, previous\
+  \ thinking blocks are automatically stripped from the context window calculation\
+  \ by the Claude API and are not part of the conversation history the model sees\
+  \ for subsequent turns. Thinking tokens are billed as output tokens only once, during\
+  \ their generation."

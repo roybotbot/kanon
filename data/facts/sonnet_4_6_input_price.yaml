@@ -1,0 +1,10 @@
+id: sonnet_4_6_input_price
+claim: Claude Sonnet 4.6 input pricing
+value: $3 per million input tokens
+numeric_value: 3
+concept: claude_model_pricing
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_models_overview

@@ -1,0 +1,8 @@
+id: batch_pricing
+name: Batch API Pricing
+description: The cost structure for using the Message Batches API, charged at 50%
+  of standard API prices.
+content_block: All usage of the Message Batches API is charged at 50% of standard
+  API prices. Pricing varies by model, with costs expressed per million tokens (MTok)
+  for both input and output. Requests that result in errors, cancellations, or expirations
+  are not billed.

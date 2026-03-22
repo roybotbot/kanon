@@ -1,0 +1,11 @@
+id: medical_scan_limitation
+claim: Whether Claude is designed to interpret complex diagnostic medical scans
+value: Claude is not designed to interpret complex diagnostic scans such as CTs or
+  MRIs
+numeric_value: null
+concept: vision_limitations
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

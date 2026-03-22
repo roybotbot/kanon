@@ -1,0 +1,10 @@
+id: batch_pricing_claude_sonnet_4_input
+claim: Batch input price for Claude Sonnet 4 per million tokens
+value: $1.50 / MTok
+numeric_value: 1.5
+concept: batch_pricing
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_batch_processing_docs

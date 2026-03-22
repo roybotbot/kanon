@@ -1,0 +1,9 @@
+id: context_rot
+name: Context Rot
+description: The phenomenon where accuracy and recall degrade as the token count in
+  the context window grows.
+content_block: "As token count grows within the context window, accuracy and recall\
+  \ degrade\u2014a phenomenon known as context rot. This makes curating what is in\
+  \ context just as important as how much space is available. Context rot means that\
+  \ having more content in the context window does not automatically lead to better\
+  \ model performance."

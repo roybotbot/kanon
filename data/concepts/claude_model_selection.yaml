@@ -1,0 +1,9 @@
+id: claude_model_selection
+name: Claude Model Selection
+description: The process of choosing between Claude model variants based on performance,
+  speed, and cost requirements.
+content_block: Anthropic offers multiple Claude model tiers suited to different use
+  cases. Claude Opus 4.6 targets the most complex tasks with highest intelligence,
+  Claude Sonnet 4.6 balances speed and intelligence, and Claude Haiku 4.5 prioritizes
+  speed. Selecting the right model involves trade-offs between latency, output quality,
+  context window size, and pricing.

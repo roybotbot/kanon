@@ -1,0 +1,10 @@
+id: image_cost_per_1k_1092x1092
+claim: Approximate cost per 1,000 images at 1092x1092 px using Claude Sonnet 4.6
+value: ~$4.80
+numeric_value: 4.8
+concept: image_token_cost
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

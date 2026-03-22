@@ -1,0 +1,10 @@
+id: haiku_4_5_bedrock_id
+claim: Claude Haiku 4.5 AWS Bedrock ID
+value: anthropic.claude-haiku-4-5-20251001-v1:0
+numeric_value: null
+concept: claude_model_capabilities
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_models_overview

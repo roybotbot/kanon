@@ -1,0 +1,8 @@
+id: thinking_budget_tokens
+name: Thinking Budget Tokens
+description: The subset of max_tokens allocated for extended thinking, billed as output
+  tokens and counting toward rate limits.
+content_block: Thinking budget tokens are a subset of the max_tokens parameter, are
+  billed as output tokens, and count toward rate limits. With adaptive thinking, Claude
+  dynamically decides its thinking allocation, so actual thinking token usage may
+  vary per request. Thinking tokens include thinking blocks.

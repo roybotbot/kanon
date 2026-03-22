@@ -1,0 +1,10 @@
+id: haiku_4_5_input_price
+claim: Claude Haiku 4.5 input pricing
+value: $1 per million input tokens
+numeric_value: 1
+concept: claude_model_pricing
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_models_overview

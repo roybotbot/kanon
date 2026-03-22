@@ -1,0 +1,10 @@
+id: extended_thinking_context_window_formula
+claim: Formula for effective context window calculation with extended thinking
+value: context_window = (input_tokens - previous_thinking_tokens) + current_turn_tokens
+numeric_value: null
+concept: extended_thinking_context
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_context_windows_doc

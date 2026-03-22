@@ -1,0 +1,10 @@
+id: opus_4_6_input_price
+claim: Claude Opus 4.6 input pricing
+value: $5 per million input tokens
+numeric_value: 5
+concept: claude_model_pricing
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_models_overview

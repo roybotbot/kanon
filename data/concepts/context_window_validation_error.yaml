@@ -1,0 +1,9 @@
+id: context_window_validation_error
+name: Context Window Validation Error Behavior
+description: The behavior of newer Claude models to return a validation error instead
+  of silently truncating when tokens exceed the context window.
+content_block: Newer Claude models starting with Claude Sonnet 3.7 return a validation
+  error when prompt and output tokens exceed the context window, rather than silently
+  truncating. This change provides more predictable behavior but requires more careful
+  token management. Users can use the token counting API to estimate token usage before
+  sending messages.

@@ -1,0 +1,8 @@
+id: anthropic_context_windows_doc
+name: Anthropic Context Windows Documentation
+description: Official Anthropic documentation explaining how context windows work
+  in Claude, including token management, extended thinking, tool use, and context
+  management strategies.
+url: https://docs.anthropic.com/en/docs/build-with-claude/context-windows
+source_type: documentation
+last_verified: '2026-03-22'

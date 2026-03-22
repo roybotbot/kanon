@@ -1,0 +1,10 @@
+id: preferred_prompt_image_order
+claim: Preferred ordering of images relative to text in a prompt
+value: Images should come before text for best results
+numeric_value: null
+concept: image_prompt_structure
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

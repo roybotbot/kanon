@@ -1,0 +1,12 @@
+id: poll_batch_status
+name: Poll for Message Batch Completion
+description: Periodically check the status of a Message Batch until processing has
+  ended and results are ready.
+steps:
+- Obtain the batch id from the creation response or by listing batches.
+- Implement a polling loop that calls the retrieval endpoint at regular intervals.
+- Check the processing_status field in the response.
+- Continue polling until processing_status is ended, indicating results are available.
+content_block: To track batch progress, use the batch id to poll the retrieval endpoint
+  periodically. The processing_status field transitions from in_progress to ended
+  when all requests have completed. You can also monitor status via the Console.

@@ -1,0 +1,10 @@
+id: extended_thinking_tool_use_context
+name: Extended Thinking with Tool Use and Context Window
+description: The specialized token management rules that apply when combining extended
+  thinking with tool use.
+content_block: When combining extended thinking with tool use, the entire unmodified
+  thinking block accompanying a specific tool request must be returned with the tool
+  results. The API uses cryptographic signatures to verify thinking block authenticity,
+  and modifying thinking blocks causes the API to return an error. After the tool
+  use cycle is complete, the thinking block can be dropped or the API will automatically
+  strip it.

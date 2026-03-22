@@ -1,0 +1,10 @@
+id: opus_4_6_context_window
+claim: Claude Opus 4.6 context window size
+value: 1 million tokens
+numeric_value: 1000000
+concept: context_window
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_models_overview

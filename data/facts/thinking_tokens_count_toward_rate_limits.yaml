@@ -1,0 +1,10 @@
+id: thinking_tokens_count_toward_rate_limits
+claim: Whether thinking budget tokens count toward rate limits
+value: Yes, thinking budget tokens count toward rate limits
+numeric_value: null
+concept: thinking_budget_tokens
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_context_windows_doc

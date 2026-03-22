@@ -10,8 +10,8 @@ targets:
 evidence_links:
 - anthropic_tool_use_docs
 generation_method: dry_run
-generated_at: '2026-03-17T09:32:37.069255+00:00'
-last_updated: '2026-03-17T09:32:37.069255+00:00'
+generated_at: '2026-03-22T08:50:32.244736+00:00'
+last_updated: '2026-03-22T08:50:32.244736+00:00'
 confidence:
   evidence: 1.0
   freshness: 1.0

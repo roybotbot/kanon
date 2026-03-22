@@ -1,0 +1,10 @@
+id: thinking_budget_subset_of_max_tokens
+claim: Relationship of thinking budget tokens to max_tokens parameter
+value: Thinking budget tokens are a subset of the max_tokens parameter
+numeric_value: null
+concept: thinking_budget_tokens
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_context_windows_doc

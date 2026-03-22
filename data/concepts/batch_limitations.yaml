@@ -1,0 +1,9 @@
+id: batch_limitations
+name: Batch Limitations
+description: The constraints and boundaries that apply to Message Batches, including
+  size, expiration, and result availability.
+content_block: A Message Batch is limited to 100,000 Message requests or 256 MB in
+  size, whichever is reached first. Batches expire if processing does not complete
+  within 24 hours, and batch results are available for 29 days after creation. Batches
+  are scoped to a Workspace, meaning only API keys and users associated with that
+  Workspace can access them.

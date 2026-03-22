@@ -1,0 +1,8 @@
+id: anthropic_models_overview
+name: Anthropic Models Overview
+description: Official Anthropic documentation page comparing Claude model variants
+  including Opus 4.6, Sonnet 4.6, and Haiku 4.5, covering capabilities, pricing, context
+  windows, and migration guidance.
+url: https://docs.anthropic.com/en/docs/about-claude/models
+source_type: documentation
+last_verified: '2026-03-22'

@@ -1,0 +1,10 @@
+id: people_identification_prohibited
+claim: Whether Claude can be used to name people in images
+value: Claude cannot be used to name people in images and refuses to do so
+numeric_value: null
+concept: vision_limitations
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

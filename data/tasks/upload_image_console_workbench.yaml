@@ -1,0 +1,11 @@
+id: upload_image_console_workbench
+name: Add an Image in the Console Workbench
+description: Attach an image to a user message block in the Anthropic Console Workbench.
+steps:
+- Open the Console Workbench
+- Locate a User message block
+- Click the button to add images that appears at the top right of the User message
+  block
+content_block: In the Console Workbench, each User message block has a dedicated button
+  at the top right for adding images. This allows users to attach images directly
+  to messages when testing prompts in the workbench environment.

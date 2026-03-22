@@ -1,0 +1,11 @@
+id: api_max_images_200k_context
+claim: Maximum number of images per API request for models with a 200k-token context
+  window
+value: '100'
+numeric_value: 100
+concept: image_upload_limits
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

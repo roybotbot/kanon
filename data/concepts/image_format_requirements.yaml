@@ -1,0 +1,7 @@
+id: image_format_requirements
+name: Image Format Requirements
+description: The supported image formats and quality considerations for Claude vision.
+content_block: 'Claude supports four image formats: JPEG, PNG, GIF, and WebP. For
+  best results, images should be clear and not blurry or pixelated. If an image contains
+  important text, the text should be legible and not too small, and key visual context
+  should not be cropped out just to enlarge text.'

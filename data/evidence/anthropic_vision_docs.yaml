@@ -1,0 +1,7 @@
+id: anthropic_vision_docs
+name: Anthropic Vision Documentation
+description: Official Anthropic guide describing how to work with images in Claude,
+  including best practices, code examples, and limitations.
+url: https://docs.anthropic.com/en/docs/build-with-claude/vision
+source_type: documentation
+last_verified: '2026-03-22'

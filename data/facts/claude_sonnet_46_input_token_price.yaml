@@ -1,0 +1,10 @@
+id: claude_sonnet_46_input_token_price
+claim: Claude Sonnet 4.6 per-token price for input tokens
+value: $3 per million input tokens
+numeric_value: 3
+concept: image_token_cost
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

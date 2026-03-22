@@ -1,0 +1,9 @@
+id: context_editing
+name: Context Editing
+description: Fine-grained strategies for managing context, including tool result clearing
+  and thinking block clearing.
+content_block: Context editing offers specialized strategies for managing context
+  beyond server-side compaction. These strategies include tool result clearing, which
+  removes old tool results in agentic workflows, and thinking block clearing, which
+  manages thinking blocks used with extended thinking. Context editing is suited for
+  more specialized context management needs.

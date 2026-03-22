@@ -1,0 +1,9 @@
+id: interleaved_thinking
+name: Interleaved Thinking
+description: A capability in Claude 4 models that enables Claude to think between
+  tool calls for more sophisticated reasoning after receiving tool results.
+content_block: Interleaved thinking is supported by Claude 4 models and enables Claude
+  to think between tool calls, allowing for more sophisticated reasoning after receiving
+  tool results. Claude Sonnet 3.7 does not support interleaved thinking and therefore
+  cannot interleave extended thinking and tool calls without a non-tool_result user
+  turn in between.

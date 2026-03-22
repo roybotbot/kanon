@@ -1,0 +1,11 @@
+id: claude_sonnet_45_sonnet_4_extended_context_requirement
+claim: Requirement for Claude Sonnet 4.5 and Sonnet 4 to use beyond 200k tokens
+value: Requires the context-1m-2025-08-07 beta header; available to organizations
+  in usage tier 4 and those with custom rate limits
+numeric_value: null
+concept: context_window
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_context_windows_doc

@@ -1,0 +1,10 @@
+id: opus_4_6_output_price
+claim: Claude Opus 4.6 output pricing
+value: $25 per million output tokens
+numeric_value: 25
+concept: claude_model_pricing
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_models_overview

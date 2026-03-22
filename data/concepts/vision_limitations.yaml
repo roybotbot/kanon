@@ -1,0 +1,9 @@
+id: vision_limitations
+name: Vision Limitations
+description: The known limitations of Claude's image understanding and analysis capabilities.
+content_block: 'Claude has several limitations in vision tasks: it cannot identify
+  or name people in images, may hallucinate or make mistakes with low-quality or very
+  small images, has limited spatial reasoning ability, can only approximate object
+  counts, cannot determine whether an image is AI-generated, does not process inappropriate
+  content, and is not designed to interpret complex diagnostic medical scans such
+  as CTs or MRIs.'

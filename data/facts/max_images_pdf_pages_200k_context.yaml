@@ -1,0 +1,11 @@
+id: max_images_pdf_pages_200k_context
+claim: Maximum number of images or PDF pages per request for models with a 200k-token
+  context window
+value: 100 images or PDF pages
+numeric_value: 100
+concept: context_window
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_context_windows_doc

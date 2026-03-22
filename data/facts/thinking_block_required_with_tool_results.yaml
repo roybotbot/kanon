@@ -1,0 +1,11 @@
+id: thinking_block_required_with_tool_results
+claim: Whether thinking blocks must be returned with tool results
+value: Yes, the extended thinking block must be returned with the corresponding tool
+  results; this is the only case where returning thinking blocks is required
+numeric_value: null
+concept: extended_thinking_tool_use_context
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_context_windows_doc

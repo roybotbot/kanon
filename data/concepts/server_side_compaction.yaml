@@ -1,0 +1,9 @@
+id: server_side_compaction
+name: Server-Side Compaction
+description: A server-side summarization strategy that automatically condenses earlier
+  parts of a conversation to enable long-running conversations beyond context limits.
+content_block: Server-side compaction is the recommended approach when conversations
+  regularly approach context window limits. It provides automatic server-side summarization
+  that condenses earlier parts of a conversation, enabling long-running conversations
+  beyond context limits with minimal integration work. It is currently available in
+  beta for Claude Opus 4.6 and Sonnet 4.6.

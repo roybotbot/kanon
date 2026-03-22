@@ -1,0 +1,10 @@
+id: batch_initial_processing_status
+claim: Processing status of a batch immediately after creation
+value: in_progress
+numeric_value: null
+concept: batch_processing_status
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_batch_processing_docs

@@ -1,0 +1,7 @@
+id: models_api
+name: Models API
+description: A programmatic API that returns capability and token limit metadata for
+  all available Claude models.
+content_block: The Models API allows developers to query model capabilities and token
+  limits programmatically. The response includes max_input_tokens, max_tokens, and
+  a capabilities object for every available model.

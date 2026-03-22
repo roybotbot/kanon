@@ -1,0 +1,8 @@
+id: custom_id
+name: Custom ID
+description: A unique identifier assigned to each request within a Message Batch,
+  used to match results to original requests.
+content_block: Each request in a Message Batch requires a unique custom_id field.
+  Because batch results may be returned in any order and not necessarily match the
+  input order, the custom_id is the required mechanism for correctly matching each
+  result to its corresponding original request.

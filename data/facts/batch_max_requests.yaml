@@ -1,0 +1,10 @@
+id: batch_max_requests
+claim: Maximum number of Message requests per batch
+value: 100,000
+numeric_value: 100000
+concept: batch_limitations
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_batch_processing_docs

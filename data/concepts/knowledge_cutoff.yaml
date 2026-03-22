@@ -1,0 +1,8 @@
+id: knowledge_cutoff
+name: Knowledge Cutoff
+description: The date boundaries defining how current a model's knowledge is, including
+  reliable knowledge cutoff and training data cutoff.
+content_block: Claude models have two distinct knowledge date boundaries. The reliable
+  knowledge cutoff is the date through which a model's knowledge is most extensive
+  and reliable. The training data cutoff is the broader date range of training data
+  used, which may extend beyond the reliable cutoff.

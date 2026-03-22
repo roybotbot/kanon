@@ -1,0 +1,10 @@
+id: batch_results_access_time
+claim: When batch results can be accessed
+value: When all messages have completed or after 24 hours, whichever comes first
+numeric_value: null
+concept: batch_limitations
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_batch_processing_docs

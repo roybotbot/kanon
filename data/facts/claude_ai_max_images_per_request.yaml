@@ -1,0 +1,10 @@
+id: claude_ai_max_images_per_request
+claim: Maximum number of images per request on claude.ai
+value: '20'
+numeric_value: 20
+concept: image_upload_limits
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

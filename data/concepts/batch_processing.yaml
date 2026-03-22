@@ -1,0 +1,9 @@
+id: batch_processing
+name: Batch Processing
+description: An approach for handling large volumes of requests asynchronously instead
+  of one at a time.
+content_block: Batch processing allows you to submit multiple requests together for
+  asynchronous processing rather than handling them one at a time with immediate responses.
+  It is particularly useful when processing large volumes of data, when immediate
+  responses are not required, or when optimizing for cost efficiency. The Message
+  Batches API is Anthropic's implementation of this pattern.

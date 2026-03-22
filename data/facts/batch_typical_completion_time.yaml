@@ -1,0 +1,10 @@
+id: batch_typical_completion_time
+claim: Typical time for most batches to complete
+value: Less than 1 hour
+numeric_value: null
+concept: message_batches_api
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_batch_processing_docs

@@ -1,0 +1,6 @@
+id: zero_data_retention
+name: Zero Data Retention (ZDR)
+description: A data handling policy under which data is not retained after processing.
+content_block: Zero Data Retention (ZDR) is a policy available for certain Anthropic
+  features. The Message Batches API is not eligible for Zero Data Retention; data
+  from batch requests is retained according to the feature's standard retention policy.

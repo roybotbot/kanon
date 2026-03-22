@@ -1,0 +1,8 @@
+id: claude_model_pricing
+name: Claude Model Pricing
+description: The per-token cost structure for input and output tokens across Claude
+  model variants.
+content_block: Claude models are priced per million tokens (MTok) for both input and
+  output separately. Pricing varies by model tier, with Opus being the most expensive
+  and Haiku the least. Additional pricing considerations include batch API discounts,
+  prompt caching rates, extended thinking costs, and vision processing fees.

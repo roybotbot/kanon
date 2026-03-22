@@ -1,0 +1,10 @@
+id: batch_recommended_cache_duration
+claim: Recommended prompt cache duration for batches with shared context
+value: 1-hour cache duration
+numeric_value: null
+concept: prompt_caching_in_batches
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_batch_processing_docs

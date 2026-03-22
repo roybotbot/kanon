@@ -1,0 +1,10 @@
+id: context_awareness
+name: Context Awareness
+description: A capability in select Claude models that allows them to track their
+  remaining context window throughout a conversation.
+content_block: Context awareness lets select Claude models track their remaining context
+  window (token budget) throughout a conversation. At the start of a conversation,
+  Claude receives information about its total context window, and after each tool
+  call, Claude receives an update on remaining capacity. This enables Claude to execute
+  tasks and manage context more effectively by understanding how much space it has
+  to work.

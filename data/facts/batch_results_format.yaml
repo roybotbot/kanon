@@ -1,0 +1,11 @@
+id: batch_results_format
+claim: File format for batch results
+value: .jsonl (JSON Lines), where each line is a valid JSON object representing the
+  result of a single request
+numeric_value: null
+concept: batch_result_types
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_batch_processing_docs

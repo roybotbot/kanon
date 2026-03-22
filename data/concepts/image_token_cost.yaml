@@ -1,0 +1,8 @@
+id: image_token_cost
+name: Image Token Cost
+description: How images are counted toward token usage and how to calculate their
+  cost.
+content_block: 'Each image included in a Claude request counts toward token usage.
+  If the image does not need to be resized, the approximate token count can be estimated
+  using the formula: tokens = (width px * height px) / 750. The cost is then calculated
+  by multiplying the token count by the per-token price of the model being used.'

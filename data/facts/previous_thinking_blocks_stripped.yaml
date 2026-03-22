@@ -1,0 +1,12 @@
+id: previous_thinking_blocks_stripped
+claim: Whether previous thinking blocks are carried forward in context window calculation
+value: Previous thinking blocks are automatically stripped from the context window
+  calculation by the Claude API and are not part of conversation history for subsequent
+  turns
+numeric_value: null
+concept: extended_thinking_context
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_context_windows_doc

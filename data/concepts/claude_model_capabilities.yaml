@@ -1,0 +1,7 @@
+id: claude_model_capabilities
+name: Claude Model Capabilities
+description: The shared and model-specific features supported by current Claude models.
+content_block: All current Claude models support text and image input, text output,
+  multilingual capabilities, and vision. Additional capabilities such as extended
+  thinking, adaptive thinking, and priority tier access vary by model. Models are
+  available via the Claude API, AWS Bedrock, and Google Vertex AI.

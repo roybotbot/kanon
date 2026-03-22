@@ -1,0 +1,15 @@
+id: create_message_batch
+name: Create a Message Batch
+description: Prepare and submit a list of Message requests to the Message Batches
+  API for asynchronous processing.
+steps:
+- Compose a list of requests, each with a unique custom_id and a params object containing
+  standard Messages API parameters.
+- Optionally verify individual request shapes using the Messages API to avoid asynchronous
+  validation errors.
+- Submit the list to the Message Batches API by passing it into the requests parameter.
+- Receive the initial batch response with processing_status set to in_progress.
+content_block: A Message Batch is created by submitting a list of Messages requests,
+  each identified by a unique custom_id and a params object. Validation is performed
+  asynchronously, so it is recommended to test individual request shapes against the
+  Messages API first. Upon creation, the batch immediately enters in_progress status.

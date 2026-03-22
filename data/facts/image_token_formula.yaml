@@ -1,0 +1,10 @@
+id: image_token_formula
+claim: Formula to estimate token count for an image that does not need resizing
+value: tokens = (width px * height px) / 750
+numeric_value: null
+concept: image_token_cost
+status: active
+effective_date: '2026-03-22'
+recorded_date: '2026-03-22'
+evidence:
+- anthropic_vision_docs

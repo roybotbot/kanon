@@ -1,0 +1,9 @@
+id: progressive_token_accumulation
+name: Progressive Token Accumulation
+description: The pattern by which each user message and assistant response accumulates
+  within the context window across conversation turns.
+content_block: As a conversation advances through turns, each user message and assistant
+  response accumulates within the context window, with previous turns preserved completely.
+  Context usage grows linearly with each turn. Each turn consists of an input phase
+  containing all previous conversation history plus the current user message, and
+  an output phase that generates a text response which becomes part of future input.

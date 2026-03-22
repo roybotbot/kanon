@@ -1,0 +1,17 @@
+id: retrieve_batch_results
+name: Retrieve Batch Results
+description: Download and process the results of a completed Message Batch.
+steps:
+- Confirm the batch processing_status is ended.
+- Access the results_url property on the Message Batch object.
+- Stream the results from results_url rather than downloading all at once, due to
+  potentially large file size.
+- Parse each line of the .jsonl results file as a JSON object.
+- Use the custom_id field on each result to match it to the corresponding original
+  request.
+- 'Handle each result according to its result type: succeeded, errored, canceled,
+  or expired.'
+content_block: Once a batch has ended, results are available at the results_url in
+  .jsonl format. Because results can be large, streaming is recommended. Each result
+  line contains a custom_id for matching to original requests and a result type indicating
+  the outcome. Results may not be in the same order as the original requests.

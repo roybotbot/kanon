@@ -1,0 +1,7 @@
+id: adaptive_thinking
+name: Adaptive Thinking
+description: A Claude model feature supported on select models for flexible reasoning
+  adaptation.
+content_block: Adaptive thinking is a capability available on Claude Opus 4.6 and
+  Sonnet 4.6 but not on Haiku 4.5. It enables the model to adapt its reasoning approach
+  based on the task at hand.
