@@ -1,0 +1,12 @@
+id: knife_sharp_safer
+claim: Sharp knives are safer than dull knives
+value: A sharp knife requires less force, giving more control and reducing slipping
+status: active
+concepts:
+  - knife_skills
+  - food_safety
+evidence:
+  - americas_test_kitchen
+evergreen: true
+effective_date: 2025-02-01
+recorded_date: 2025-02-10

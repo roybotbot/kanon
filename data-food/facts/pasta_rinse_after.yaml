@@ -1,0 +1,11 @@
+id: pasta_rinse_after
+claim: Rinsing pasta after cooking
+value: Always rinse pasta with cold water after draining
+status: active
+concepts:
+  - pasta_cooking
+evidence:
+  - chef_marco_blog
+evergreen: false
+effective_date: 2024-06-01
+recorded_date: 2024-06-15

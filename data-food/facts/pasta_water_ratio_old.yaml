@@ -1,0 +1,14 @@
+id: pasta_water_ratio_old
+claim: Water ratio for cooking pasta
+value: 6 quarts of water per pound of pasta
+numeric_value: 6.0
+status: superseded
+concepts:
+  - pasta_cooking
+evidence:
+  - americas_test_kitchen
+evergreen: false
+effective_date: 2020-01-01
+recorded_date: 2020-01-15
+superseded_date: 2025-01-01
+superseded_by: pasta_water_ratio

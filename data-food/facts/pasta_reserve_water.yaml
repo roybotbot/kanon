@@ -1,0 +1,12 @@
+id: pasta_reserve_water
+claim: Reserving pasta water
+value: Save 1 cup of starchy pasta water before draining to use for finishing sauces
+status: active
+concepts:
+  - pasta_cooking
+  - sauce_making
+evidence:
+  - serious_eats
+evergreen: true
+effective_date: 2025-01-01
+recorded_date: 2025-01-15

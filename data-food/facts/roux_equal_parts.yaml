@@ -1,0 +1,11 @@
+id: roux_equal_parts
+claim: Roux ratio
+value: Equal parts fat and flour by weight
+status: active
+concepts:
+  - sauce_making
+evidence:
+  - americas_test_kitchen
+evergreen: true
+effective_date: 2025-03-01
+recorded_date: 2025-03-10

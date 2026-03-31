@@ -1,0 +1,12 @@
+id: tomato_sauce_low_heat
+claim: Cooking tomato sauce on low heat
+value: Simmer tomato sauce on low heat for at least 30 minutes to develop flavor and reduce acidity
+status: active
+concepts:
+  - sauce_making
+  - italian_cuisine
+evidence:
+  - serious_eats
+evergreen: false
+effective_date: 2025-03-01
+recorded_date: 2025-03-10

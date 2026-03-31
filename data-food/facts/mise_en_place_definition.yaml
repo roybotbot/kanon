@@ -1,0 +1,12 @@
+id: mise_en_place_definition
+claim: Definition of mise en place
+value: French culinary term meaning everything in its place — all ingredients measured, cut, and organized before cooking begins
+status: active
+concepts:
+  - mise_en_place
+  - knife_skills
+evidence:
+  - americas_test_kitchen
+evergreen: true
+effective_date: 2025-01-01
+recorded_date: 2025-01-10

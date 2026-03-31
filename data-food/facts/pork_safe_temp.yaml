@@ -1,0 +1,12 @@
+id: pork_safe_temp
+claim: Safe internal temperature for pork
+value: 145°F (63°C) with a 3-minute rest
+numeric_value: 145.0
+status: active
+concepts:
+  - food_safety
+evidence:
+  - food_safety_gov
+evergreen: true
+effective_date: 2020-01-01
+recorded_date: 2025-01-01

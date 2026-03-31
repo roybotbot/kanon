@@ -1,0 +1,11 @@
+id: pasta_al_dente_test
+claim: How to test pasta for al dente
+value: Bite the pasta — it should be firm with a thin white center visible when cut
+status: active
+concepts:
+  - pasta_cooking
+evidence:
+  - americas_test_kitchen
+evergreen: true
+effective_date: 2025-01-01
+recorded_date: 2025-01-15

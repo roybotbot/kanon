@@ -1,0 +1,7 @@
+id: food_safety_gov
+name: USDA Food Safety Guidelines
+description: Official government food safety temperatures and handling guidelines
+url: https://www.foodsafety.gov
+source_type: documentation
+trust: 0.95
+last_verified: 2025-06-01

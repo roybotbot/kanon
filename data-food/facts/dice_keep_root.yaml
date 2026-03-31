@@ -1,0 +1,12 @@
+id: dice_keep_root
+claim: Keeping the root when dicing an onion
+value: Keep the root end intact to hold the onion together while cutting
+status: active
+concepts:
+  - knife_skills
+  - mise_en_place
+evidence:
+  - americas_test_kitchen
+evergreen: true
+effective_date: 2025-02-01
+recorded_date: 2025-02-10

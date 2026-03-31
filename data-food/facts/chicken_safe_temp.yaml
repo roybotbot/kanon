@@ -1,0 +1,12 @@
+id: chicken_safe_temp
+claim: Safe internal temperature for chicken
+value: 165°F (74°C) measured at the thickest part
+numeric_value: 165.0
+status: active
+concepts:
+  - food_safety
+evidence:
+  - food_safety_gov
+evergreen: true
+effective_date: 2020-01-01
+recorded_date: 2025-01-01

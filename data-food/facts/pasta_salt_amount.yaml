@@ -1,0 +1,13 @@
+id: pasta_salt_amount
+claim: Salt amount for pasta water
+value: 1 to 2 tablespoons of kosher salt per gallon of water
+status: active
+concepts:
+  - pasta_cooking
+  - italian_cuisine
+evidence:
+  - serious_eats
+  - americas_test_kitchen
+evergreen: false
+effective_date: 2025-01-01
+recorded_date: 2025-01-15

@@ -1,0 +1,7 @@
+id: chef_marco_blog
+name: Chef Marco's Kitchen Blog
+description: Personal blog of a home cook with occasional inaccuracies
+url: https://chefmarco.example.com
+source_type: article
+trust: 0.35
+last_verified: 2025-04-01
